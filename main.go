@@ -60,7 +60,25 @@ func (r Rank) String() string {
 	return fmt.Sprintf("%c", ranks[r])
 }
 
-func main() {
+type Card struct {
+	R Rank
+	S Suit
+}
+
+func (c Card) String() string {
+	return fmt.Sprintf("%v%v", c.R, c.S)
+}
+
+func SmokeCard() {
 	fmt.Println("Suits:", SPADES, HEARTS, DIAMONDS, CLUBS)
 	fmt.Println("Ranks:", ACE, DUCE, TEN, JACK, QUEEN, KING)
+	fmt.Println("Card:", Card{ACE, HEARTS})
+}
+
+func parse(s string) Card {
+	return Card{ACE, HEARTS}
+}
+
+func main() {
+	SmokeCard()
 }
