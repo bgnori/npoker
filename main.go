@@ -8,18 +8,18 @@ type Suit int
 
 const (
 	CLUBS Suit = iota
-	DIAMOND
-	HEART
-	SPADE
+	DIAMONDS
+	HEARTS
+	SPADES
 )
 
-// Spade
+// Spades
 //U+2660 //&spades;
 
-//Heart
+//Hearts
 //U+2665 //&hearts
 
-//Diamond
+//Diamonds
 //U+2666 //&diams;
 
 //Clubs
@@ -35,6 +35,32 @@ func (s Suit) String() string {
 	return suits[s]
 }
 
+type Rank int
+
+const (
+	_ Rank = iota
+	ACE
+	DUCE
+	TREY
+	FOUR
+	FIVE
+	SIX
+	SEVEN
+	EIGHT
+	NINE
+	TEN
+	JACK
+	QUEEN
+	KING
+)
+
+var ranks = "0A23456789TJQK"
+
+func (r Rank) String() string {
+	return fmt.Sprintf("%c", ranks[r])
+}
+
 func main() {
-	fmt.Println("Suits:", SPADE, HEART, DIAMOND, CLUBS)
+	fmt.Println("Suits:", SPADES, HEARTS, DIAMONDS, CLUBS)
+	fmt.Println("Ranks:", ACE, DUCE, TEN, JACK, QUEEN, KING)
 }
