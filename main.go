@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Suit int
@@ -76,9 +77,18 @@ func SmokeCard() {
 }
 
 func parse(s string) Card {
-	return Card{ACE, HEARTS}
+	i := strings.Index(ranks, s[0:1])
+	j := strings.Index("cdhs", s[1:2])
+	return Card{Rank(i), Suit(j)}
+}
+
+func SmokeParseWith(input string) {
+	got := parse(input)
+	fmt.Println(input, "==>", got)
 }
 
 func main() {
 	SmokeCard()
+	SmokeParseWith("Ah")
+	SmokeParseWith("5c")
 }
