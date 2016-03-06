@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 )
 
@@ -86,9 +87,62 @@ func SmokeParseWith(input string) {
 	got := parse(input)
 	fmt.Println(input, "==>", got)
 }
+func SmokeParse() {
+	SmokeParseWith("Ah")
+	SmokeParseWith("5c")
+	//SmokeParseWith("Xc")
+}
+
+type Deck []Card
+
+func (d *Deck) Append(c Card) {
+	*d = append([]Card(*d), c)
+}
+
+func (d Deck) String() string {
+	var xs []string
+	for _, c := range d {
+		xs = append(xs, fmt.Sprintf("%v%v", c.R, c.S))
+	}
+	return strings.Join(xs, ",")
+}
+func (d *Deck) Length() int {
+	return len([]Card(*d))
+}
+
+func (d *Deck) Shuffle() {
+	n := d.Length()
+	xs := []Card(*d)
+	for i := n - 1; i >= 0; i-- {
+		j := rand.Intn(i + 1)
+		xs[i], xs[j] = xs[j], xs[i]
+	}
+}
+
+func BuildDeck() *Deck {
+	d := new(Deck)
+	for s := CLUBS; s <= SPADES; s++ {
+		for r := ACE; r <= KING; r++ {
+			d.Append(Card{r, s})
+		}
+	}
+	return d
+}
+
+func SmokeDeck() {
+	d := Deck{Card{ACE, SPADES}, Card{FOUR, HEARTS}}
+	fmt.Println(d)
+	e := BuildDeck()
+	fmt.Println(e)
+	fmt.Println(e.Length())
+	e.Shuffle()
+	fmt.Println(e)
+	e.Shuffle()
+	fmt.Println(e)
+}
 
 func main() {
 	SmokeCard()
-	SmokeParseWith("Ah")
-	SmokeParseWith("5c")
+	SmokeParse()
+	SmokeDeck()
 }
