@@ -54,9 +54,10 @@ const (
 	JACK
 	QUEEN
 	KING
+	HIACE
 )
 
-var ranks = "0A23456789TJQK"
+var ranks = "0A23456789TJQKA"
 
 func (r Rank) String() string {
 	return fmt.Sprintf("%c", ranks[r])
@@ -69,6 +70,18 @@ type Card struct {
 
 func (c Card) String() string {
 	return fmt.Sprintf("%v%v", c.R, c.S)
+}
+
+func (c Card) Ord() int {
+	//2 <= x <=53
+	x := 0
+	switch c.R {
+	case ACE:
+		x += 14
+	default:
+		x += int(c.R)
+	}
+	return x + int(c.S)*int(KING)
 }
 
 func SmokeCard() {
@@ -101,7 +114,7 @@ func (d *Deck) Append(c Card) {
 
 func (d Deck) String() string {
 	var xs []string
-	for _, c := range d {
+	for _, c := range []Card(d) {
 		xs = append(xs, fmt.Sprintf("%v%v", c.R, c.S))
 	}
 	return strings.Join(xs, ",")
@@ -119,7 +132,18 @@ func (d *Deck) Shuffle() {
 	}
 }
 
-func BuildDeck() *Deck {
+func (d *Deck) Drop(c Card) {
+	xs := []Card(*d)
+	for i, x := range xs {
+		if x == c {
+			*d = Deck(append(xs[:i], xs[i+1:]...))
+			return
+		}
+	}
+	panic("card not found")
+}
+
+func BuildFullDeck() *Deck {
 	d := new(Deck)
 	for s := CLUBS; s <= SPADES; s++ {
 		for r := ACE; r <= KING; r++ {
@@ -129,20 +153,154 @@ func BuildDeck() *Deck {
 	return d
 }
 
+func Join(d Deck, e Deck) Deck {
+	return Deck(append([]Card(d), []Card(e)...))
+}
+
 func SmokeDeck() {
 	d := Deck{Card{ACE, SPADES}, Card{FOUR, HEARTS}}
 	fmt.Println(d)
-	e := BuildDeck()
+	e := BuildFullDeck()
 	fmt.Println(e)
 	fmt.Println(e.Length())
 	e.Shuffle()
 	fmt.Println(e)
 	e.Shuffle()
 	fmt.Println(e)
+	f := BuildFullDeck()
+	for i, c := range []Card(*f) {
+		fmt.Println(i, c, c.Ord())
+	}
+	f.Drop(Card{ACE, HEARTS})
+	fmt.Println(f.Length())
+	fmt.Println(f)
+	f.Shuffle()
+	fmt.Println(f)
+
+	g := Deck{Card{ACE, SPADES}, Card{ACE, CLUBS}}
+	h := Deck{Card{KING, HEARTS}, Card{KING, DIAMONDS}}
+	fmt.Println(Join(g, h))
+}
+
+type PokerHands int
+
+const (
+	HighCard PokerHands = iota
+	OnePair
+	TwoPair
+	ThreeOfAKind
+	Straight
+	Flush
+	FullHouse
+	FourOfAKind
+	StraightFlush
+)
+
+var pokerHandsString = []string{
+	"high card",
+	"one pair",
+	"two pair",
+	"three of a kind",
+	"straight",
+	"flush",
+	"four of a kind",
+	"straight flush",
+}
+
+type PokerHandDiscriptor struct {
+	ph    PokerHands
+	which []int
+}
+
+type CardRanking struct {
+	xs        Deck
+	highcards []int
+	pairs     [][]int
+	threes    [][]int
+	fours     [][]int
+	ranks     [][]int
+	suits     []int
+}
+
+func appendrank(ranks [][]int, i int, r Rank) [][]int {
+	xs := ranks[r]
+	if xs == nil {
+		xs = make([]int, 0)
+	}
+	ranks[r] = append(xs, i)
+	return ranks
+}
+
+func MakeCardRanking(xs Deck) CardRanking {
+	cr := CardRanking{
+		xs,
+		make([]int, 0, 5),
+		make([][]int, 0, 5),
+		make([][]int, 0, 5),
+		make([][]int, 0, 5),
+		make([][]int, HIACE+1),
+		nil,
+	}
+
+	for i, x := range xs {
+		cr.ranks = appendrank(cr.ranks, i, x.R)
+		if x.R == ACE {
+			cr.ranks = appendrank(cr.ranks, i, HIACE)
+		}
+	}
+
+	for i := HIACE; i > ACE; i -= 1 {
+		fmt.Println(i, len(cr.ranks[i]))
+		if len(cr.ranks[i]) == 1 {
+			cr.highcards = append(cr.highcards, cr.ranks[i][0])
+		}
+		if len(cr.ranks[i]) == 3 {
+			cr.pairs = append(cr.pairs, []int{cr.ranks[i][0], cr.ranks[i][1]})
+		}
+		if len(cr.ranks[i]) == 3 {
+			cr.threes = append(cr.threes, []int{cr.ranks[i][0], cr.ranks[i][1], cr.ranks[i][2]})
+		}
+		if len(cr.ranks[i]) == 4 {
+			cr.fours = append(cr.fours, []int{cr.ranks[i][0], cr.ranks[i][1], cr.ranks[i][2], cr.ranks[i][3]})
+		}
+	}
+
+	return cr
+}
+
+func CalcHand(xs Deck) PokerHandDiscriptor {
+	MakeCardRanking(xs)
+	return PokerHandDiscriptor{}
+}
+
+func SmokeCardRanking() {
+	d := Deck{
+		Card{TEN, CLUBS},
+		Card{EIGHT, HEARTS},
+		Card{JACK, DIAMONDS},
+		Card{SEVEN, HEARTS},
+		Card{NINE, SPADES},
+		Card{ACE, SPADES},
+		Card{TEN, HEARTS},
+		Card{ACE, HEARTS},
+		Card{ACE, CLUBS},
+		Card{KING, CLUBS},
+		Card{KING, SPADES},
+		Card{KING, DIAMONDS},
+		Card{ACE, DIAMONDS},
+	}
+	fmt.Printf("%v\n", d)
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+}
+
+func SmokeHand() {
+	SmokeCardRanking()
 }
 
 func main() {
 	SmokeCard()
 	SmokeParse()
 	SmokeDeck()
+	SmokeHand()
 }
