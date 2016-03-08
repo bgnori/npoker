@@ -13,6 +13,7 @@ const (
 	DIAMONDS
 	HEARTS
 	SPADES
+	SUITS
 )
 
 // Spades
@@ -55,6 +56,7 @@ const (
 	QUEEN
 	KING
 	HIACE
+	RANKS
 )
 
 var ranks = "0A23456789TJQKA"
@@ -219,7 +221,8 @@ type CardRanking struct {
 	threes    [][]int
 	fours     [][]int
 	ranks     [][]int
-	suits     []int
+	suits     [][]int
+	straight  [][]int
 }
 
 func appendrank(ranks [][]int, i int, r Rank) [][]int {
@@ -238,8 +241,9 @@ func MakeCardRanking(xs Deck) CardRanking {
 		make([][]int, 0, 5),
 		make([][]int, 0, 5),
 		make([][]int, 0, 5),
-		make([][]int, HIACE+1),
-		nil,
+		make([][]int, RANKS),
+		make([][]int, SUITS),
+		make([][]int, RANKS),
 	}
 
 	for i, x := range xs {
@@ -247,6 +251,14 @@ func MakeCardRanking(xs Deck) CardRanking {
 		if x.R == ACE {
 			cr.ranks = appendrank(cr.ranks, i, HIACE)
 		}
+	}
+
+	for i, x := range xs {
+		xs := cr.suits[x.S]
+		if xs == nil {
+			xs = make([]int, 0)
+		}
+		cr.suits[x.S] = append(xs, i)
 	}
 
 	for i := HIACE; i > ACE; i -= 1 {
@@ -265,6 +277,24 @@ func MakeCardRanking(xs Deck) CardRanking {
 		}
 	}
 
+	for i := HIACE; i > FOUR; i -= 1 {
+		j := i
+		if len(cr.ranks[i]) > 0 {
+			for ; j > FOUR && len(cr.ranks[j]) > 0; j -= 1 {
+				if i-4 == j {
+					fmt.Println("Straight", i, j)
+					xs := cr.straight[i]
+					if xs == nil {
+						xs = make([]int, 0)
+					}
+					cr.straight[i] = append(xs, cr.ranks[i][0])
+					i -= 1
+					continue
+				}
+			}
+			i = j
+		}
+	}
 	return cr
 }
 
@@ -288,6 +318,7 @@ func SmokeCardRanking() {
 		Card{KING, SPADES},
 		Card{KING, DIAMONDS},
 		Card{ACE, DIAMONDS},
+		Card{DUCE, HEARTS},
 	}
 	fmt.Printf("%v\n", d)
 	cr := MakeCardRanking(d)
