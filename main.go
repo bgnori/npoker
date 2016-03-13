@@ -266,7 +266,7 @@ func MakeCardRanking(xs Deck) CardRanking {
 		if len(cr.ranks[i]) == 1 {
 			cr.highcards = append(cr.highcards, cr.ranks[i][0])
 		}
-		if len(cr.ranks[i]) == 3 {
+		if len(cr.ranks[i]) == 2 {
 			cr.pairs = append(cr.pairs, []int{cr.ranks[i][0], cr.ranks[i][1]})
 		}
 		if len(cr.ranks[i]) == 3 {
@@ -282,7 +282,6 @@ func MakeCardRanking(xs Deck) CardRanking {
 		if len(cr.ranks[i]) > 0 {
 			for ; j > FOUR && len(cr.ranks[j]) > 0; j -= 1 {
 				if i-4 == j {
-					fmt.Println("Straight", i, j)
 					xs := cr.straight[i]
 					if xs == nil {
 						xs = make([]int, 0)
@@ -296,6 +295,50 @@ func MakeCardRanking(xs Deck) CardRanking {
 		}
 	}
 	return cr
+}
+
+func (cr CardRanking) String() string {
+	var xs []string
+
+	xs = append(xs, fmt.Sprintf("%v", cr.xs))
+
+	var highcards []string
+	for _, pos := range cr.highcards {
+		highcards = append(highcards, fmt.Sprintf("%v", cr.xs[pos]))
+	}
+	xs = append(xs, strings.Join(highcards, ","))
+
+	var pairs []string
+	for _, p := range cr.pairs {
+		pairs = append(pairs, fmt.Sprintf("%v %v", cr.xs[p[0]], cr.xs[p[1]]))
+	}
+	xs = append(xs, strings.Join(pairs, ","))
+
+	var threes []string
+	for _, p := range cr.threes {
+		threes = append(threes, fmt.Sprintf("%v %v %v", cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]]))
+	}
+	xs = append(xs, strings.Join(threes, ","))
+
+	var fours []string
+	for _, p := range cr.fours {
+		fours = append(fours, fmt.Sprintf("%v %v %v %v", cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]], cr.xs[p[3]]))
+	}
+	xs = append(xs, strings.Join(fours, ","))
+
+	/*
+			ranks     [][]int
+			suits     [][]int
+			straight  [][]int
+		var straight []string
+		for _, p := range cr.straight {
+			straight = append(straight, fmt.Sprintf("%v", cr.xs[p[0]]))
+			//, cr.xs[p[1]], cr.xs[p[2]], cr.xs[p[3]], cr.xs[p[4]]))
+		}
+		xs = append(xs, strings.Join(straight, ","))
+	*/
+
+	return strings.Join(xs, "\n")
 }
 
 func CalcHand(xs Deck) PokerHandDiscriptor {
@@ -325,8 +368,64 @@ func SmokeCardRanking() {
 	fmt.Printf("%v\n", cr)
 }
 
+func SmokeOnePair() {
+	fmt.Println("SmokeOnePair")
+	d := Deck{
+		Card{ACE, CLUBS},
+		Card{ACE, HEARTS},
+		Card{QUEEN, DIAMONDS},
+		Card{TEN, HEARTS},
+		Card{EIGHT, SPADES},
+		Card{FIVE, DIAMONDS},
+		Card{FOUR, HEARTS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+}
+
+func SmokeTwoPair() {
+	fmt.Println("SmokeTwoPair")
+	d := Deck{}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+}
+
+func SmokeThreeOfAKind() {
+	d := Deck{
+		Card{ACE, CLUBS},
+		Card{ACE, HEARTS},
+		Card{QUEEN, DIAMONDS},
+		Card{TEN, HEARTS},
+		Card{EIGHT, SPADES},
+		Card{ACE, DIAMONDS},
+		Card{FOUR, HEARTS},
+	}
+	fmt.Println("SmokeThreeOfAKind")
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+}
+
+func SmokeFourOfAKind() {
+	d := Deck{
+		Card{ACE, CLUBS},
+		Card{ACE, HEARTS},
+		Card{QUEEN, DIAMONDS},
+		Card{TEN, HEARTS},
+		Card{ACE, SPADES},
+		Card{ACE, DIAMONDS},
+		Card{FOUR, HEARTS},
+	}
+	fmt.Println("SmokeFourOfAKind")
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+}
+
 func SmokeHand() {
 	SmokeCardRanking()
+	SmokeOnePair()
+	SmokeTwoPair()
+	SmokeThreeOfAKind()
+	SmokeFourOfAKind()
 }
 
 func main() {
