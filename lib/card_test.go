@@ -67,3 +67,18 @@ func TestParse(t *testing.T) {
 	parsehelper(t, Card{ACE, HEARTS}, "Ah")
 	parsehelper(t, Card{FIVE, CLUBS}, "5c")
 }
+
+func cardordhelper(t *testing.T, expected int, to_string Card) {
+	if expected != to_string.Ord() {
+		t.Errorf("'%s' is expected for %d, but got %d.", expected, to_string, to_string.Ord())
+	}
+}
+
+func TestOrd(t *testing.T) {
+	cardordhelper(t, 14, Card{ACE, CLUBS})
+	cardordhelper(t, 13, Card{KING, CLUBS})
+	cardordhelper(t, 2, Card{DUCE, CLUBS})
+	cardordhelper(t, 53, Card{ACE, SPADES})
+	cardordhelper(t, 52, Card{KING, SPADES})
+	cardordhelper(t, 41, Card{DUCE, SPADES})
+}
