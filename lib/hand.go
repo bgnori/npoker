@@ -37,11 +37,11 @@ type PokerHandDiscriptor struct {
 
 type CardRanking struct {
 	xs        Deck
+	ranks     [][]int
 	highcards []int
 	pairs     [][]int
 	threes    [][]int
 	fours     [][]int
-	ranks     [][]int
 	suits     [][]int
 	straight  [][]int
 }
@@ -58,13 +58,13 @@ func appendrank(ranks [][]int, i int, r Rank) [][]int {
 func MakeCardRanking(xs Deck) CardRanking {
 	cr := CardRanking{
 		xs,
-		make([]int, 0, 5),
-		make([][]int, 0, 5),
-		make([][]int, 0, 5),
-		make([][]int, 0, 5),
 		make([][]int, RANKS),
-		make([][]int, SUITS),
-		make([][]int, RANKS),
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
 	}
 
 	for i, x := range xs {
@@ -74,16 +74,26 @@ func MakeCardRanking(xs Deck) CardRanking {
 		}
 	}
 
-	for i, x := range xs {
+	return cr
+}
+
+func (cr *CardRanking) calcSuit() {
+	cr.suits = make([][]int, SUITS)
+	for i, x := range cr.xs {
 		xs := cr.suits[x.S]
 		if xs == nil {
 			xs = make([]int, 0)
 		}
 		cr.suits[x.S] = append(xs, i)
 	}
+}
 
+func (cr *CardRanking) calcPairwise() {
+	cr.highcards = make([]int, 0, 5)
+	cr.pairs = make([][]int, 0, 5)
+	cr.threes = make([][]int, 0, 5)
+	cr.fours = make([][]int, 0, 5)
 	for i := HIACE; i > ACE; i -= 1 {
-		fmt.Println(i, len(cr.ranks[i]))
 		if len(cr.ranks[i]) == 1 {
 			cr.highcards = append(cr.highcards, cr.ranks[i][0])
 		}
@@ -97,7 +107,11 @@ func MakeCardRanking(xs Deck) CardRanking {
 			cr.fours = append(cr.fours, []int{cr.ranks[i][0], cr.ranks[i][1], cr.ranks[i][2], cr.ranks[i][3]})
 		}
 	}
+}
 
+func (cr *CardRanking) calcStraight() {
+
+	cr.straight = make([][]int, RANKS)
 	for i := HIACE; i > FOUR; i -= 1 {
 		j := i
 		if len(cr.ranks[i]) > 0 {
@@ -115,7 +129,7 @@ func MakeCardRanking(xs Deck) CardRanking {
 			i = j
 		}
 	}
-	return cr
+
 }
 
 func (cr CardRanking) String() string {
