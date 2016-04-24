@@ -5,9 +5,40 @@ import (
 	"testing"
 )
 
+func TestFIFO5(t *testing.T) {
+	f := newFIFO5()
+	f.Push(1)
+	f.Push(2)
+	f.Push(3)
+	f.Push(4)
+	f.Push(5)
+	if len(f.xs) != 5 {
+		t.Error("f.xs should be {1, 2, 3, 4, 5}, but got %+v", f.xs)
+	}
+	f.Push(6)
+	if len(f.xs) != 5 {
+		t.Error("f.xs should be {1, 2, 3, 4, 5}, but got %+v", f.xs)
+	}
+	if f.xs[0] != 2 {
+		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+	}
+	if f.xs[1] != 3 {
+		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+	}
+	if f.xs[2] != 4 {
+		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+	}
+	if f.xs[3] != 5 {
+		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+	}
+	if f.xs[4] != 6 {
+		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+	}
+}
+
 func TestNew(t *testing.T) {
 	d := Deck{}
-	cr := MakeCardRanking(d)
+	cr := prepareCardRanking(d)
 	if cr.xs == nil {
 		t.Error("got nil")
 	}
@@ -36,7 +67,7 @@ func TestNew(t *testing.T) {
 
 func TestCalcSuit(t *testing.T) {
 	d := Deck{}
-	cr := MakeCardRanking(d)
+	cr := prepareCardRanking(d)
 	cr.calcSuit()
 	if cr.xs == nil {
 		t.Error("got nil")
@@ -67,7 +98,7 @@ func TestCalcSuit(t *testing.T) {
 
 func TestCalcPairwise(t *testing.T) {
 	d := Deck{}
-	cr := MakeCardRanking(d)
+	cr := prepareCardRanking(d)
 	cr.calcSuit()
 	cr.calcPairwise()
 	if cr.xs == nil {
@@ -98,7 +129,7 @@ func TestCalcPairwise(t *testing.T) {
 
 func TestCalcStraight(t *testing.T) {
 	d := Deck{}
-	cr := MakeCardRanking(d)
+	cr := prepareCardRanking(d)
 	cr.calcSuit()
 	cr.calcPairwise()
 	cr.calcStraight()
@@ -125,6 +156,29 @@ func TestCalcStraight(t *testing.T) {
 	}
 	if cr.straight == nil {
 		t.Error("got nil for straight")
+	}
+}
+
+func TestCalcStraightDeck001(t *testing.T) {
+	d := Deck{
+		Card{ACE, SPADES},
+		Card{TEN, SPADES},
+		Card{JACK, SPADES},
+		Card{KING, SPADES},
+		Card{QUEEN, SPADES},
+	}
+	cr := prepareCardRanking(d)
+	cr.calcSuit()
+	cr.calcPairwise()
+	cr.calcStraight()
+	if cr.straight == nil {
+		t.Error("got nil for straight")
+	}
+	if len(cr.straight) != int(RANKS) {
+		t.Errorf("should be 15 entries, but %d with %+v", len(cr.straight), cr.straight)
+	}
+	if len(cr.straight[int(HIACE-HIACE)]) != 5 {
+		t.Error("straight entry must have 5 index, but %+v", cr.straight)
 	}
 }
 

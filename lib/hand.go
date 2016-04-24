@@ -55,7 +55,7 @@ func appendrank(ranks [][]int, i int, r Rank) [][]int {
 	return ranks
 }
 
-func MakeCardRanking(xs Deck) CardRanking {
+func prepareCardRanking(xs Deck) CardRanking {
 	cr := CardRanking{
 		xs,
 		make([][]int, RANKS),
@@ -73,7 +73,15 @@ func MakeCardRanking(xs Deck) CardRanking {
 			cr.ranks = appendrank(cr.ranks, i, HIACE)
 		}
 	}
+	return cr
 
+}
+
+func MakeCardRanking(xs Deck) CardRanking {
+	cr := prepareCardRanking(xs)
+	cr.calcSuit()
+	cr.calcPairwise()
+	cr.calcStraight()
 	return cr
 }
 
@@ -109,27 +117,64 @@ func (cr *CardRanking) calcPairwise() {
 	}
 }
 
-func (cr *CardRanking) calcStraight() {
+type FIFO5 struct {
+	xs []int
+}
 
-	cr.straight = make([][]int, RANKS)
-	for i := HIACE; i > FOUR; i -= 1 {
-		j := i
-		if len(cr.ranks[i]) > 0 {
-			for ; j > FOUR && len(cr.ranks[j]) > 0; j -= 1 {
-				if i-4 == j {
-					xs := cr.straight[i]
-					if xs == nil {
-						xs = make([]int, 0)
-					}
-					cr.straight[i] = append(xs, cr.ranks[i][0])
-					i -= 1
-					continue
-				}
-			}
-			i = j
+func newFIFO5() *FIFO5 {
+	return &FIFO5{xs: make([]int, 0)}
+}
+
+func (f *FIFO5) Push(x int) {
+	if len(f.xs) == 5 {
+		copy(f.xs, f.xs[1:5])
+		f.xs[4] = x
+	} else {
+		f.xs = append(f.xs, x)
+	}
+}
+
+func (f *FIFO5) Empty() {
+	f.xs = make([]int, 0)
+}
+
+func (f *FIFO5) CloneXS() []int {
+	ys := make([]int, len(f.xs))
+	copy(ys, f.xs)
+	return ys
+}
+
+func (cr *CardRanking) calcStraightSub(head Rank, f *FIFO5, filled bool) (Rank, bool) {
+	var start Rank
+	start = 0
+	if filled {
+		start = 4
+	}
+	for i := start; i < 5; i++ {
+		if len(cr.ranks[head-i]) > 0 {
+			f.Push(cr.ranks[head-i][0])
+		} else {
+			//fail case
+			f.Empty()
+			return head - i - 1, false
 		}
 	}
+	return head - 1, true
+}
 
+func (cr *CardRanking) calcStraight() {
+	var next Rank
+	f := newFIFO5()
+	cr.straight = make([][]int, RANKS)
+	found := false
+	next = 0
+	for i := HIACE; i >= FIVE; {
+		next, found = cr.calcStraightSub(i, f, found)
+		if found {
+			cr.straight[int(HIACE-i)] = f.CloneXS()
+		}
+		i = next
+	}
 }
 
 func (cr CardRanking) String() string {
@@ -141,37 +186,46 @@ func (cr CardRanking) String() string {
 	for _, pos := range cr.highcards {
 		highcards = append(highcards, fmt.Sprintf("%v", cr.xs[pos]))
 	}
+	xs = append(xs, "highcards:")
 	xs = append(xs, strings.Join(highcards, ","))
 
 	var pairs []string
 	for _, p := range cr.pairs {
 		pairs = append(pairs, fmt.Sprintf("%v %v", cr.xs[p[0]], cr.xs[p[1]]))
 	}
+	xs = append(xs, "pairs:")
 	xs = append(xs, strings.Join(pairs, ","))
 
 	var threes []string
 	for _, p := range cr.threes {
 		threes = append(threes, fmt.Sprintf("%v %v %v", cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]]))
 	}
+	xs = append(xs, "threes:")
 	xs = append(xs, strings.Join(threes, ","))
 
 	var fours []string
 	for _, p := range cr.fours {
 		fours = append(fours, fmt.Sprintf("%v %v %v %v", cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]], cr.xs[p[3]]))
 	}
+	xs = append(xs, "fours:")
 	xs = append(xs, strings.Join(fours, ","))
 
-	/*
-			ranks     [][]int
-			suits     [][]int
-			straight  [][]int
-		var straight []string
-		for _, p := range cr.straight {
-			straight = append(straight, fmt.Sprintf("%v", cr.xs[p[0]]))
-			//, cr.xs[p[1]], cr.xs[p[2]], cr.xs[p[3]], cr.xs[p[4]]))
+	var straight []string
+	for _, p := range cr.straight {
+		if len(p) > 0 {
+			fmt.Println("%+v", p)
+			straight = append(straight,
+				fmt.Sprintf("%v%v%v%v%v",
+					cr.xs[p[0]],
+					cr.xs[p[1]],
+					cr.xs[p[2]],
+					cr.xs[p[3]],
+					cr.xs[p[4]],
+				))
 		}
-		xs = append(xs, strings.Join(straight, ","))
-	*/
+	}
+	xs = append(xs, "straight:")
+	xs = append(xs, strings.Join(straight, ","))
 
 	return strings.Join(xs, "\n")
 }
