@@ -90,3 +90,40 @@ func parse(s string) Card {
 	j := strings.Index("cdhs", s[1:2])
 	return Card{Rank(i), Suit(j)}
 }
+
+func SuitPermZero() [][]Suit {
+	return [][]Suit{}
+}
+
+func SuitPermOne() [][]Suit {
+	return [][]Suit{
+		[]Suit{CLUBS},
+		[]Suit{DIAMONDS},
+		[]Suit{HEARTS},
+		[]Suit{SPADES},
+	}
+}
+
+func SuitPermTwo() [][]Suit {
+	return [][]Suit{
+		[]Suit{CLUBS, DIAMONDS},
+		[]Suit{CLUBS, HEARTS},
+		[]Suit{CLUBS, SPADES},
+		[]Suit{DIAMONDS, HEARTS},
+		[]Suit{DIAMONDS, SPADES},
+		[]Suit{HEARTS, SPADES},
+	}
+}
+
+func SuitPermThree() [][]Suit {
+	return [][]Suit{
+		[]Suit{CLUBS, DIAMONDS, HEARTS},
+		[]Suit{CLUBS, DIAMONDS, SPADES},
+		[]Suit{CLUBS, HEARTS, SPADES},
+		[]Suit{DIAMONDS, HEARTS, SPADES},
+	}
+}
+
+func SuitPermFour() [][]Suit {
+	return [][]Suit{[]Suit{CLUBS, DIAMONDS, HEARTS, SPADES}}
+}

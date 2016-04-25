@@ -8,6 +8,12 @@ import (
 
 type Deck []Card
 
+type Index int
+
+const (
+	NullIndex Index = -1
+)
+
 func (d *Deck) Append(c Card) {
 	*d = append([]Card(*d), c)
 }
