@@ -36,14 +36,10 @@ func TestFIFO5(t *testing.T) {
 	}
 }
 
-/*
 func TestNew(t *testing.T) {
 	d := Deck{}
 	cr := prepareCardRanking(d)
 	if cr.xs == nil {
-		t.Error("got nil")
-	}
-	if cr.ranks == nil {
 		t.Error("got nil")
 	}
 	if cr.highcards != nil {
@@ -56,9 +52,6 @@ func TestNew(t *testing.T) {
 		t.Error("got non-nil")
 	}
 	if cr.fours != nil {
-		t.Error("got non-nil")
-	}
-	if cr.suits != nil {
 		t.Error("got non-nil")
 	}
 	if cr.straight != nil {
@@ -72,9 +65,6 @@ func TestCalcSuit(t *testing.T) {
 	if cr.xs == nil {
 		t.Error("got nil")
 	}
-	if cr.ranks == nil {
-		t.Error("got nil")
-	}
 	if cr.highcards != nil {
 		t.Error("got non-nil")
 	}
@@ -87,14 +77,13 @@ func TestCalcSuit(t *testing.T) {
 	if cr.fours != nil {
 		t.Error("got non-nil")
 	}
-	if cr.suits == nil {
-		t.Error("got nil for suit")
-	}
 	if cr.straight != nil {
 		t.Error("got non-nil")
 	}
 
 }
+
+/*
 
 func TestCalcPairwise(t *testing.T) {
 	d := Deck{}

@@ -37,28 +37,28 @@ type PokerHandDiscriptor struct {
 
 type CardRanking struct {
 	xs        Deck
+	cards     [][]Index //rank, suite, index
 	highcards []Index
 	pairs     [][]Index
 	threes    [][]Index
 	fours     [][]Index
 	straight  [][]Index
-	cards     [][]Index //rank, suite, index
 }
 
 func prepareCardRanking(d Deck) CardRanking {
 	cr := CardRanking{
 		xs:        d,
+		cards:     nil,
 		highcards: nil,
 		pairs:     nil,
 		threes:    nil,
 		fours:     nil,
 		straight:  nil,
-		cards:     nil,
 	}
 
-	cr.cards = make([][]Index, RANKS-1)
+	cr.cards = make([][]Index, RANKS)
 	for r := ACE; r < HIACE; r += 1 {
-		cr.cards[r] = make([]Index, SUITS-1)
+		cr.cards[r] = make([]Index, SUITS)
 		for s := CLUBS; s < SUITS; s += 1 {
 			cr.cards[r][s] = NullIndex
 		}
