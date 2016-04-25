@@ -36,24 +36,26 @@ type PokerHandDiscriptor struct {
 }
 
 type CardRanking struct {
-	xs        Deck
-	cards     [][]Index //rank, suite, index
-	highcards []Index
-	pairs     [][][]Index // ranks nth (index, index)
-	threes    [][][]Index // ranks nth (index, index, index)
-	fours     [][][]Index // ranks nth (index, index, index, index)
-	straight  [][]Index
+	xs            Deck
+	cards         [][]Index //rank, suite, index
+	highcards     []Index
+	pairs         [][][]Index // ranks nth (index, index)
+	threes        [][][]Index // ranks nth (index, index, index)
+	fours         [][][]Index // ranks nth (index, index, index, index)
+	straight      [][]Index   //ranks (index, index, index, index)
+	straightFlush [][]Index   // suit, (index, index, index, index, index)
 }
 
 func prepareCardRanking(d Deck) CardRanking {
 	cr := CardRanking{
-		xs:        d,
-		cards:     nil,
-		highcards: nil,
-		pairs:     nil,
-		threes:    nil,
-		fours:     nil,
-		straight:  nil,
+		xs:            d,
+		cards:         nil,
+		highcards:     nil,
+		pairs:         nil,
+		threes:        nil,
+		fours:         nil,
+		straight:      nil,
+		straightFlush: nil,
 	}
 
 	cr.cards = make([][]Index, RANKS)
@@ -76,6 +78,7 @@ func MakeCardRanking(xs Deck) CardRanking {
 	cr := prepareCardRanking(xs)
 	cr.calcPairwise()
 	cr.calcStraight()
+	cr.calcStraightFlush()
 	return cr
 }
 
@@ -165,7 +168,7 @@ func (f *FIFO5) CloneXS() []Index {
 	return ys
 }
 
-func (cr *CardRanking) calcStraightSub(head Rank, f *FIFO5, filled bool) (Rank, bool) {
+func (cr *CardRanking) calcStraightSubWith(head Rank, f *FIFO5, filled bool, suits []Suit) (Rank, bool) {
 	var start Rank
 	start = 0
 	if filled {
@@ -173,8 +176,12 @@ func (cr *CardRanking) calcStraightSub(head Rank, f *FIFO5, filled bool) (Rank, 
 	}
 	for i := start; i < 5; i++ {
 		found := NullIndex
-		for s := CLUBS; found == NullIndex && s < SUITS; s++ {
+
+		for _, s := range suits {
 			found = cr.cards[head-i][s]
+			if found != NullIndex {
+				break
+			}
 		}
 
 		if found != NullIndex {
@@ -195,7 +202,7 @@ func (cr *CardRanking) calcStraight() {
 	found := false
 	next = 0
 	for i := HIACE; i >= FIVE; {
-		next, found = cr.calcStraightSub(i, f, found)
+		next, found = cr.calcStraightSubWith(i, f, found, []Suit{CLUBS, DIAMONDS, HEARTS, SPADES})
 		if found {
 			cr.straight[int(HIACE-i)] = f.CloneXS()
 		}
@@ -216,6 +223,28 @@ func (cr *CardRanking) findFlushOf(s Suit) (bool, []Index) {
 		}
 	}
 	return false, nil
+}
+
+func (cr *CardRanking) calcStraightFlushSub(suit []Suit) {
+	var next Rank
+	f := newFIFO5()
+	found := false
+	next = 0
+	for i := HIACE; i >= FIVE; {
+		next, found = cr.calcStraightSubWith(i, f, found, suit)
+		if found {
+			cr.straightFlush[suit[0]] = f.CloneXS()
+			return
+		}
+		i = next
+	}
+}
+
+func (cr *CardRanking) calcStraightFlush() {
+	cr.straightFlush = make([][]Index, RANKS)
+	for _, s := range SuitPermOne() {
+		cr.calcStraightFlushSub(s)
+	}
 }
 
 func (cr CardRanking) String() string {
@@ -260,7 +289,6 @@ func (cr CardRanking) String() string {
 	var straight []string
 	for _, p := range cr.straight {
 		if len(p) > 0 {
-			fmt.Println("%+v", p)
 			straight = append(straight,
 				fmt.Sprintf("%v %v %v %v %v",
 					cr.xs[p[0]],
@@ -289,6 +317,22 @@ func (cr CardRanking) String() string {
 	}
 	xs = append(xs, "flush:")
 	xs = append(xs, strings.Join(flush, ","))
+
+	var sf []string
+	for _, p := range cr.straightFlush {
+		if len(p) > 0 {
+			sf = append(sf,
+				fmt.Sprintf("%v %v %v %v %v",
+					cr.xs[p[0]],
+					cr.xs[p[1]],
+					cr.xs[p[2]],
+					cr.xs[p[3]],
+					cr.xs[p[4]],
+				))
+		}
+	}
+	xs = append(xs, "straight flush:")
+	xs = append(xs, strings.Join(sf, ","))
 
 	return strings.Join(xs, "\n")
 }
