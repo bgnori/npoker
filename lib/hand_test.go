@@ -161,11 +161,13 @@ func TestCalcStraight(t *testing.T) {
 
 func TestCalcStraightDeck001(t *testing.T) {
 	d := Deck{
-		Card{ACE, SPADES},
-		Card{TEN, SPADES},
-		Card{JACK, SPADES},
+		Card{ACE, CLUBS},
+		Card{TEN, DIAMONDS},
+		Card{JACK, HEARTS},
 		Card{KING, SPADES},
-		Card{QUEEN, SPADES},
+		Card{NINE, CLUBS},
+		Card{EIGHT, DIAMONDS},
+		Card{QUEEN, HEARTS},
 	}
 	cr := prepareCardRanking(d)
 	cr.calcSuit()
@@ -178,6 +180,12 @@ func TestCalcStraightDeck001(t *testing.T) {
 		t.Errorf("should be 15 entries, but %d with %+v", len(cr.straight), cr.straight)
 	}
 	if len(cr.straight[int(HIACE-HIACE)]) != 5 {
+		t.Error("straight entry must have 5 index, but %+v", cr.straight)
+	}
+	if len(cr.straight[int(HIACE-KING)]) != 5 {
+		t.Error("straight entry must have 5 index, but %+v", cr.straight)
+	}
+	if len(cr.straight[int(HIACE-QUEEN)]) != 5 {
 		t.Error("straight entry must have 5 index, but %+v", cr.straight)
 	}
 }
