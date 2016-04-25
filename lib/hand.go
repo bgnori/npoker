@@ -92,22 +92,6 @@ func (cr *CardRanking) calcPairwise() {
 	cr.pairs = make([][][]Index, RANKS)
 	cr.threes = make([][][]Index, RANKS)
 	cr.fours = make([][][]Index, RANKS)
-	/*
-		for i := HIACE; i > ACE; i -= 1 {
-			if len(cr.ranks[i]) >= 1 {
-				cr.highcards = append(cr.highcards, cr.ranks[i][0])
-			}
-			if len(cr.ranks[i]) >= 2 {
-				cr.pairs = append(cr.pairs, []int{cr.ranks[i][0], cr.ranks[i][1]})
-			}
-			if len(cr.ranks[i]) >= 3 {
-				cr.threes = append(cr.threes, []int{cr.ranks[i][0], cr.ranks[i][1], cr.ranks[i][2]})
-			}
-			if len(cr.ranks[i]) >= 4 {
-				cr.fours = append(cr.fours, []int{cr.ranks[i][0], cr.ranks[i][1], cr.ranks[i][2], cr.ranks[i][3]})
-			}
-		}
-	*/
 
 	for r := HIACE; r > ACE; r -= 1 {
 		for _, s := range SuitPermOne() {
@@ -152,8 +136,6 @@ func (cr *CardRanking) calcPairwise() {
 			}
 		}
 	}
-	fmt.Println(cr.pairs)
-
 }
 
 type FIFO5 struct {
@@ -184,22 +166,24 @@ func (f *FIFO5) CloneXS() []Index {
 }
 
 func (cr *CardRanking) calcStraightSub(head Rank, f *FIFO5, filled bool) (Rank, bool) {
-	/*
-		var start Rank
-		start = 0
-		if filled {
-			start = 4
+	var start Rank
+	start = 0
+	if filled {
+		start = 4
+	}
+	for i := start; i < 5; i++ {
+		found := NullIndex
+		for s := CLUBS; found == NullIndex && s < SUITS; s++ {
+			found = cr.cards[head-i][s]
 		}
-			for i := start; i < 5; i++ {
-				if len(cr.ranks[head-i]) > 0 {
-					f.Push(cr.ranks[head-i][0])
-				} else {
-					//fail case
-					f.Empty()
-					return head - i - 1, false
-				}
-			}
-	*/
+
+		if found != NullIndex {
+			f.Push(found)
+		} else {
+			f.Empty()
+			return head - i - 1, false
+		}
+	}
 	return head - 1, true
 
 }
@@ -217,6 +201,21 @@ func (cr *CardRanking) calcStraight() {
 		}
 		i = next
 	}
+}
+
+func (cr *CardRanking) findFlashOf(s Suit) (bool, []Index) {
+	xs := make([]Index, 0)
+	for r := HIACE; r >= DUCE; r-- {
+		checked := cr.cards[r][s]
+		if checked == NullIndex {
+			continue
+		}
+		xs = append(xs, checked)
+		if len(xs) >= 5 {
+			return true, xs
+		}
+	}
+	return false, nil
 }
 
 func (cr CardRanking) String() string {
@@ -275,21 +274,21 @@ func (cr CardRanking) String() string {
 	xs = append(xs, "straight:")
 	xs = append(xs, strings.Join(straight, ","))
 
-	/*
-			var flash []string
-			for _, p := range cr.suits {
-				flash = append(flash, fmt.Sprintf("%v", p[0]))
-					fmt.Sprintf("%v %v %v %v %v",
-						cr.xs[p[0]],
-						cr.xs[p[1]],
-						cr.xs[p[2]],
-						cr.xs[p[3]],
-						cr.xs[p[4]],
-					))
-			}
-		xs = append(xs, "flash:")
-		xs = append(xs, strings.Join(flash, ","))
-	*/
+	var flash []string
+	for _, s := range SuitPermOne() {
+		if found, p := cr.findFlashOf(s[0]); found {
+			flash = append(flash,
+				fmt.Sprintf("%v %v %v %v %v",
+					cr.xs[p[0]],
+					cr.xs[p[1]],
+					cr.xs[p[2]],
+					cr.xs[p[3]],
+					cr.xs[p[4]],
+				))
+		}
+	}
+	xs = append(xs, "flash:")
+	xs = append(xs, strings.Join(flash, ","))
 
 	return strings.Join(xs, "\n")
 }
