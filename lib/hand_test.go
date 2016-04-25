@@ -83,16 +83,11 @@ func TestCalcSuit(t *testing.T) {
 
 }
 
-/*
-
 func TestCalcPairwise(t *testing.T) {
 	d := Deck{}
 	cr := prepareCardRanking(d)
 	cr.calcPairwise()
 	if cr.xs == nil {
-		t.Error("got nil")
-	}
-	if cr.ranks == nil {
 		t.Error("got nil")
 	}
 	if cr.highcards == nil {
@@ -107,14 +102,12 @@ func TestCalcPairwise(t *testing.T) {
 	if cr.fours == nil {
 		t.Error("got nil")
 	}
-	if cr.suits == nil {
-		t.Error("got nil for suit")
-	}
 	if cr.straight != nil {
 		t.Error("got non-nil")
 	}
 }
 
+/*
 func TestCalcStraight(t *testing.T) {
 	d := Deck{}
 	cr := prepareCardRanking(d)
@@ -194,6 +187,7 @@ func TestCalcFlashDeck001(t *testing.T) {
 	}
 
 }
+*/
 
 func TestCalc(t *testing.T) {
 }
@@ -597,8 +591,6 @@ func TestSampleHand000(t *testing.T) {
 
 	// nothing with Queen high,
 }
-
-*/
 
 func SmokeCardRanking() {
 	d := Deck{

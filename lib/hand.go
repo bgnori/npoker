@@ -39,9 +39,9 @@ type CardRanking struct {
 	xs        Deck
 	cards     [][]Index //rank, suite, index
 	highcards []Index
-	pairs     [][]Index
-	threes    [][]Index
-	fours     [][]Index
+	pairs     [][][]Index // ranks nth (index, index)
+	threes    [][][]Index // ranks nth (index, index, index)
+	fours     [][][]Index // ranks nth (index, index, index, index)
 	straight  [][]Index
 }
 
@@ -57,7 +57,7 @@ func prepareCardRanking(d Deck) CardRanking {
 	}
 
 	cr.cards = make([][]Index, RANKS)
-	for r := ACE; r < HIACE; r += 1 {
+	for r := ACE; r < RANKS; r += 1 {
 		cr.cards[r] = make([]Index, SUITS)
 		for s := CLUBS; s < SUITS; s += 1 {
 			cr.cards[r][s] = NullIndex
@@ -65,9 +65,11 @@ func prepareCardRanking(d Deck) CardRanking {
 	}
 	for i, x := range d {
 		cr.cards[x.R][x.S] = Index(i)
+		if x.R == ACE {
+			cr.cards[HIACE][x.S] = Index(i)
+		}
 	}
 	return cr
-
 }
 
 func MakeCardRanking(xs Deck) CardRanking {
@@ -77,11 +79,19 @@ func MakeCardRanking(xs Deck) CardRanking {
 	return cr
 }
 
+func (cr *CardRanking) isSameRankWithLastItem(r Rank, xs []Index) bool {
+	n := len(xs)
+	if n == 0 {
+		return false
+	}
+	return cr.xs[xs[n-1]].R == r
+}
+
 func (cr *CardRanking) calcPairwise() {
 	cr.highcards = make([]Index, 0, 5)
-	cr.pairs = make([][]Index, 0, 5)
-	cr.threes = make([][]Index, 0, 5)
-	cr.fours = make([][]Index, 0, 5)
+	cr.pairs = make([][][]Index, RANKS)
+	cr.threes = make([][][]Index, RANKS)
+	cr.fours = make([][][]Index, RANKS)
 	/*
 		for i := HIACE; i > ACE; i -= 1 {
 			if len(cr.ranks[i]) >= 1 {
@@ -100,14 +110,50 @@ func (cr *CardRanking) calcPairwise() {
 	*/
 
 	for r := HIACE; r > ACE; r -= 1 {
-		for s := CLUBS; s < SUITS; s += 1 {
-			if cr.cards[r][s] != NullIndex {
-				// UGH! Duplication
-				cr.highcards = append(cr.highcards, cr.cards[r][s])
+		for _, s := range SuitPermOne() {
+			if !cr.isSameRankWithLastItem(r, cr.highcards) && cr.cards[r][s[0]] != NullIndex {
+				cr.highcards = append(cr.highcards, cr.cards[r][s[0]])
 			}
 		}
-
+		for _, s := range SuitPermTwo() {
+			//fmt.Println(s)
+			p := cr.cards[r][s[0]]
+			q := cr.cards[r][s[1]]
+			if p != NullIndex && q != NullIndex {
+				if cr.pairs[r] == nil {
+					cr.pairs[r] = make([][]Index, 0)
+				}
+				cr.pairs[r] = append(cr.pairs[r], []Index{p, q})
+			}
+		}
+		for _, s := range SuitPermThree() {
+			//fmt.Println(s)
+			x := cr.cards[r][s[0]]
+			y := cr.cards[r][s[1]]
+			z := cr.cards[r][s[2]]
+			if x != NullIndex && y != NullIndex && z != NullIndex {
+				if cr.threes[r] == nil {
+					cr.threes[r] = make([][]Index, 0)
+				}
+				cr.threes[r] = append(cr.threes[r], []Index{x, y, z})
+			}
+		}
+		for _, s := range SuitPermFour() {
+			//fmt.Println(s)
+			a := cr.cards[r][s[0]]
+			b := cr.cards[r][s[1]]
+			c := cr.cards[r][s[2]]
+			d := cr.cards[r][s[3]]
+			if a != NullIndex && b != NullIndex && c != NullIndex && d != NullIndex {
+				if cr.fours[r] == nil {
+					cr.fours[r] = make([][]Index, 0)
+				}
+				cr.fours[r] = append(cr.fours[r], []Index{a, b, c, d})
+			}
+		}
 	}
+	fmt.Println(cr.pairs)
+
 }
 
 type FIFO5 struct {
@@ -186,22 +232,28 @@ func (cr CardRanking) String() string {
 	xs = append(xs, strings.Join(highcards, ","))
 
 	var pairs []string
-	for _, p := range cr.pairs {
-		pairs = append(pairs, fmt.Sprintf("%v %v", cr.xs[p[0]], cr.xs[p[1]]))
+	for r, px := range cr.pairs {
+		for _, p := range px {
+			pairs = append(pairs, fmt.Sprintf("%v: %v %v", r, cr.xs[p[0]], cr.xs[p[1]]))
+		}
 	}
 	xs = append(xs, "pairs:")
 	xs = append(xs, strings.Join(pairs, ","))
 
 	var threes []string
-	for _, p := range cr.threes {
-		threes = append(threes, fmt.Sprintf("%v %v %v", cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]]))
+	for r, px := range cr.threes {
+		for _, p := range px {
+			threes = append(threes, fmt.Sprintf("%v: %v %v %v", r, cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]]))
+		}
 	}
 	xs = append(xs, "threes:")
 	xs = append(xs, strings.Join(threes, ","))
 
 	var fours []string
-	for _, p := range cr.fours {
-		fours = append(fours, fmt.Sprintf("%v %v %v %v", cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]], cr.xs[p[3]]))
+	for r, px := range cr.fours {
+		for _, p := range px {
+			fours = append(fours, fmt.Sprintf("%v: %v %v %v %v", r, cr.xs[p[0]], cr.xs[p[1]], cr.xs[p[2]], cr.xs[p[3]]))
+		}
 	}
 	xs = append(xs, "fours:")
 	xs = append(xs, strings.Join(fours, ","))
