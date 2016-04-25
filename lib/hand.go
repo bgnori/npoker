@@ -38,10 +38,10 @@ type PokerHandDiscriptor struct {
 type CardRanking struct {
 	xs        Deck
 	highcards []Index
-	pairs     [][]int
-	threes    [][]int
-	fours     [][]int
-	straight  [][]int
+	pairs     [][]Index
+	threes    [][]Index
+	fours     [][]Index
+	straight  [][]Index
 	cards     [][]Index //rank, suite, index
 }
 
@@ -79,9 +79,9 @@ func MakeCardRanking(xs Deck) CardRanking {
 
 func (cr *CardRanking) calcPairwise() {
 	cr.highcards = make([]Index, 0, 5)
-	cr.pairs = make([][]int, 0, 5)
-	cr.threes = make([][]int, 0, 5)
-	cr.fours = make([][]int, 0, 5)
+	cr.pairs = make([][]Index, 0, 5)
+	cr.threes = make([][]Index, 0, 5)
+	cr.fours = make([][]Index, 0, 5)
 	/*
 		for i := HIACE; i > ACE; i -= 1 {
 			if len(cr.ranks[i]) >= 1 {
@@ -111,14 +111,14 @@ func (cr *CardRanking) calcPairwise() {
 }
 
 type FIFO5 struct {
-	xs []int
+	xs []Index
 }
 
 func newFIFO5() *FIFO5 {
-	return &FIFO5{xs: make([]int, 0)}
+	return &FIFO5{xs: make([]Index, 0)}
 }
 
-func (f *FIFO5) Push(x int) {
+func (f *FIFO5) Push(x Index) {
 	if len(f.xs) == 5 {
 		copy(f.xs, f.xs[1:5])
 		f.xs[4] = x
@@ -128,11 +128,11 @@ func (f *FIFO5) Push(x int) {
 }
 
 func (f *FIFO5) Empty() {
-	f.xs = make([]int, 0)
+	f.xs = make([]Index, 0)
 }
 
-func (f *FIFO5) CloneXS() []int {
-	ys := make([]int, len(f.xs))
+func (f *FIFO5) CloneXS() []Index {
+	ys := make([]Index, len(f.xs))
 	copy(ys, f.xs)
 	return ys
 }
@@ -161,7 +161,7 @@ func (cr *CardRanking) calcStraightSub(head Rank, f *FIFO5, filled bool) (Rank, 
 func (cr *CardRanking) calcStraight() {
 	var next Rank
 	f := newFIFO5()
-	cr.straight = make([][]int, RANKS)
+	cr.straight = make([][]Index, RANKS)
 	found := false
 	next = 0
 	for i := HIACE; i >= FIVE; {
