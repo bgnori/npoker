@@ -87,7 +87,7 @@ func (cr *CardRanking) isSameRankWithLastItem(r Rank, xs []Index) bool {
 	if n == 0 {
 		return false
 	}
-	return cr.xs[xs[n-1]].R == r
+	return cr.xs[xs[n-1]].R == r || (cr.xs[xs[n-1]].R == ACE && r == HIACE)
 }
 
 func (cr *CardRanking) calcPairwise() {
