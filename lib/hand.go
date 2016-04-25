@@ -203,7 +203,7 @@ func (cr *CardRanking) calcStraight() {
 	}
 }
 
-func (cr *CardRanking) findFlashOf(s Suit) (bool, []Index) {
+func (cr *CardRanking) findFlushOf(s Suit) (bool, []Index) {
 	xs := make([]Index, 0)
 	for r := HIACE; r >= DUCE; r-- {
 		checked := cr.cards[r][s]
@@ -274,10 +274,10 @@ func (cr CardRanking) String() string {
 	xs = append(xs, "straight:")
 	xs = append(xs, strings.Join(straight, ","))
 
-	var flash []string
+	var flush []string
 	for _, s := range SuitPermOne() {
-		if found, p := cr.findFlashOf(s[0]); found {
-			flash = append(flash,
+		if found, p := cr.findFlushOf(s[0]); found {
+			flush = append(flush,
 				fmt.Sprintf("%v %v %v %v %v",
 					cr.xs[p[0]],
 					cr.xs[p[1]],
@@ -287,8 +287,8 @@ func (cr CardRanking) String() string {
 				))
 		}
 	}
-	xs = append(xs, "flash:")
-	xs = append(xs, strings.Join(flash, ","))
+	xs = append(xs, "flush:")
+	xs = append(xs, strings.Join(flush, ","))
 
 	return strings.Join(xs, "\n")
 }
