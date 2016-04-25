@@ -107,16 +107,12 @@ func TestCalcPairwise(t *testing.T) {
 	}
 }
 
-/*
 func TestCalcStraight(t *testing.T) {
 	d := Deck{}
 	cr := prepareCardRanking(d)
 	cr.calcPairwise()
 	cr.calcStraight()
 	if cr.xs == nil {
-		t.Error("got nil")
-	}
-	if cr.ranks == nil {
 		t.Error("got nil")
 	}
 	if cr.highcards == nil {
@@ -130,9 +126,6 @@ func TestCalcStraight(t *testing.T) {
 	}
 	if cr.fours == nil {
 		t.Error("got nil")
-	}
-	if cr.suits == nil {
-		t.Error("got nil for suit")
 	}
 	if cr.straight == nil {
 		t.Error("got nil for straight")
@@ -169,7 +162,7 @@ func TestCalcStraightDeck001(t *testing.T) {
 	}
 }
 
-func TestCalcFlashDeck001(t *testing.T) {
+func TestCalcFlushDeck001(t *testing.T) {
 	d := Deck{
 		Card{ACE, SPADES},
 		Card{TEN, SPADES},
@@ -182,12 +175,7 @@ func TestCalcFlashDeck001(t *testing.T) {
 	cr := prepareCardRanking(d)
 	cr.calcPairwise()
 	cr.calcStraight()
-	if cr.suits == nil {
-		t.Error("got nil for suit")
-	}
-
 }
-*/
 
 func TestCalc(t *testing.T) {
 }
@@ -381,7 +369,7 @@ func TestSampleHand012(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	// Straight Flash with ACE HIGH,
+	// Straight Flush with ACE HIGH,
 }
 
 func TestSampleHand013(t *testing.T) {
@@ -461,7 +449,7 @@ func TestSampleHand017(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	// straight flash with ACE High
+	// straight  with ACE High
 }
 
 func TestSampleHand018(t *testing.T) {
@@ -477,7 +465,7 @@ func TestSampleHand018(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	// straight flash with ACE High
+	// straight  with ACE High
 }
 
 func TestSampleHand019(t *testing.T) {
@@ -493,7 +481,7 @@ func TestSampleHand019(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	// Flash with Queen, TEN, NINE, FIVE, FOUR high
+	// Flush with Queen, TEN, NINE, FIVE, FOUR high
 }
 
 func TestSampleHand020(t *testing.T) {
@@ -509,7 +497,7 @@ func TestSampleHand020(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	// Flash with ACE, QUEEN, JACK, SIX, DUCE high
+	// Flush with ACE, QUEEN, JACK, SIX, DUCE high
 }
 
 func TestSampleHand021(t *testing.T) {
@@ -525,7 +513,7 @@ func TestSampleHand021(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	// Flash with JACK, TEN, EIGHT, SIX, DUCE high
+	// Flush with JACK, TEN, EIGHT, SIX, DUCE high
 }
 
 func TestSampleHand022(t *testing.T) {
@@ -574,6 +562,70 @@ func TestSampleHand024(t *testing.T) {
 	fmt.Printf("%v\n", cr)
 
 	// straight, EIGHT high
+}
+
+func TestSampleHand025(t *testing.T) {
+	d := Deck{
+		Card{JACK, SPADES},
+		Card{JACK, CLUBS},
+		Card{JACK, DIAMONDS},
+		Card{TREY, SPADES},
+		Card{QUEEN, CLUBS},
+		Card{QUEEN, DIAMONDS},
+		Card{DUCE, CLUBS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	// FullHouse, Jack over Queen,
+}
+
+func TestSampleHand026(t *testing.T) {
+	d := Deck{
+		Card{ACE, SPADES},
+		Card{ACE, HEARTS},
+		Card{JACK, DIAMONDS},
+		Card{TREY, SPADES},
+		Card{QUEEN, CLUBS},
+		Card{QUEEN, DIAMONDS},
+		Card{DUCE, CLUBS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	// Two pairs, Aces, Queens, with JACK High
+}
+
+func TestSampleHand027(t *testing.T) {
+	d := Deck{
+		Card{KING, DIAMONDS},
+		Card{ACE, DIAMONDS},
+		Card{JACK, DIAMONDS},
+		Card{TREY, SPADES},
+		Card{QUEEN, CLUBS},
+		Card{QUEEN, DIAMONDS},
+		Card{DUCE, CLUBS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	// A pair , with Ace King, Jack High
+}
+
+func TestSampleHand028(t *testing.T) {
+	d := Deck{
+		Card{KING, DIAMONDS},
+		Card{ACE, DIAMONDS},
+		Card{JACK, DIAMONDS},
+		Card{TREY, SPADES},
+		Card{QUEEN, CLUBS},
+		Card{QUEEN, DIAMONDS},
+		Card{TEN, DIAMONDS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	// Straight Flush
 }
 
 func TestSampleHand000(t *testing.T) {
