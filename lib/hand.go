@@ -26,13 +26,19 @@ var pokerHandsString = []string{
 	"three of a kind",
 	"straight",
 	"flush",
+	"full house",
 	"four of a kind",
 	"straight flush",
 }
 
+func (ph PokerHands) String() string {
+	return pokerHandsString[ph]
+}
+
 type PokerHandDiscriptor struct {
 	ph    PokerHands
-	which []int
+	xs    Deck
+	which []Index
 }
 
 type CardRanking struct {
@@ -337,7 +343,157 @@ func (cr CardRanking) String() string {
 	return strings.Join(xs, "\n")
 }
 
-func CalcHand(xs Deck) PokerHandDiscriptor {
-	MakeCardRanking(xs)
-	return PokerHandDiscriptor{}
+func (phd *PokerHandDiscriptor) String() string {
+	var xs []string
+	xs = append(xs, fmt.Sprintf("%v", phd.ph))
+	xs = append(xs, fmt.Sprintf("%v %v %v %v %v",
+		phd.xs[phd.which[0]],
+		phd.xs[phd.which[1]],
+		phd.xs[phd.which[2]],
+		phd.xs[phd.which[3]],
+		phd.xs[phd.which[4]],
+	))
+	return strings.Join(xs, ",")
+}
+
+func (cr *CardRanking) isBanned(h Index, bann []Rank) bool {
+	for _, r := range bann {
+		if cr.xs[h].R == r || (cr.xs[h].R == ACE && r == HIACE) {
+			return true
+		}
+	}
+	return false
+}
+
+func (cr *CardRanking) fillWithHighCards(xs []Index, nth int, bann ...Rank) {
+	for _, h := range cr.highcards {
+		if !cr.isBanned(h, bann) {
+			xs[nth] = h
+			nth++
+			if nth > 4 {
+				return
+			}
+		}
+	}
+	panic(fmt.Sprintf("failed to fill %v", xs))
+}
+
+func CalcHand(xs Deck) *PokerHandDiscriptor {
+	cr := MakeCardRanking(xs)
+	for _, p := range cr.straightFlush {
+		if len(p) > 0 {
+			return &PokerHandDiscriptor{
+				ph:    StraightFlush,
+				xs:    xs,
+				which: p,
+			}
+		}
+	}
+
+	for _, px := range cr.fours {
+		for _, p := range px {
+			q := make([]Index, 5)
+			copy(q, p[0:4])
+			cr.fillWithHighCards(q, 4, cr.xs[q[0]].R)
+			return &PokerHandDiscriptor{
+				ph:    FourOfAKind,
+				xs:    xs,
+				which: q,
+			}
+		}
+	}
+
+	for full_r, threes := range cr.threes {
+		for _, p := range threes {
+			ys := make([]Index, 5)
+			copy(ys, p[0:3])
+			for pair_r, pairs := range cr.pairs {
+				if pair_r != full_r {
+					for _, q := range pairs {
+						ys[3] = q[0]
+						ys[4] = q[1]
+						return &PokerHandDiscriptor{
+							ph:    FullHouse,
+							xs:    xs,
+							which: ys,
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for _, s := range SuitPermOne() {
+		if found, p := cr.findFlushOf(s[0]); found {
+			return &PokerHandDiscriptor{
+				ph:    Flush,
+				xs:    xs,
+				which: p,
+			}
+		}
+	}
+
+	for _, p := range cr.straight {
+		if len(p) > 0 {
+			return &PokerHandDiscriptor{
+				ph:    Straight,
+				xs:    xs,
+				which: p,
+			}
+		}
+	}
+
+	for _, px := range cr.threes {
+		for _, p := range px {
+			q := make([]Index, 5)
+			copy(q, p[0:3])
+			cr.fillWithHighCards(q, 3, cr.xs[q[0]].R)
+			return &PokerHandDiscriptor{
+				ph:    ThreeOfAKind,
+				xs:    xs,
+				which: q,
+			}
+		}
+	}
+
+	for high_r, high_x := range cr.pairs {
+		for _, high := range high_x {
+			q := make([]Index, 5)
+			copy(q[0:2], high[0:2])
+			for low_r, low_x := range cr.pairs {
+				if high_r != low_r {
+					for _, low := range low_x {
+						copy(q[2:4], low[0:2])
+						cr.fillWithHighCards(q, 4, Rank(high_r), Rank(low_r))
+						return &PokerHandDiscriptor{
+							ph:    TwoPair,
+							xs:    xs,
+							which: q,
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for r, px := range cr.pairs {
+		for _, p := range px {
+			q := make([]Index, 5)
+			copy(q[0:2], p[0:2])
+			cr.fillWithHighCards(q, 2, Rank(r))
+			return &PokerHandDiscriptor{
+				ph:    OnePair,
+				xs:    xs,
+				which: q,
+			}
+		}
+	}
+
+	q := make([]Index, 5)
+	cr.fillWithHighCards(q, 0)
+	return &PokerHandDiscriptor{
+		ph:    HighCard,
+		xs:    xs,
+		which: q,
+	}
 }

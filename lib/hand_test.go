@@ -193,6 +193,8 @@ func TestSampleHand001(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// nothing with QUEEN, TEN, NINE, SIX, FOUR high,
 }
 
@@ -209,6 +211,8 @@ func TestSampleHand002(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// nothing with ACE, JACK, TEN, NINE, SEVEN high,
 }
 
@@ -225,6 +229,8 @@ func TestSampleHand003(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pair of Six with ACE, JACK, EIGHT, high,
 }
 
@@ -241,6 +247,8 @@ func TestSampleHand004(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pair of Ten with ACE, EIGHT, SEVEN high
 }
 
@@ -257,6 +265,8 @@ func TestSampleHand005(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// nothing with JACK, TEN, NINE, EIGHT, FOUR high,
 }
 
@@ -273,6 +283,8 @@ func TestSampleHand006(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// pair of SIX with ACE, KING, TEN high
 }
 
@@ -289,6 +301,8 @@ func TestSampleHand007(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pairs of KING and FOUR with QUEEN high,
 }
 
@@ -305,6 +319,8 @@ func TestSampleHand008(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// pair of KING with JACK, EIGHT, SIX high
 }
 
@@ -321,6 +337,8 @@ func TestSampleHand009(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pairs of TEN and EIGHT with JACK high
 }
 
@@ -337,6 +355,8 @@ func TestSampleHand010(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// FullHouse, FIVE over TREY
 }
 
@@ -353,6 +373,8 @@ func TestSampleHand011(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// FullHouse, JACK over FOUR
 }
 
@@ -369,6 +391,8 @@ func TestSampleHand012(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Straight Flush with ACE HIGH,
 }
 
@@ -385,6 +409,8 @@ func TestSampleHand013(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pairs of JACK and FIVE with QUEEN high
 }
 
@@ -401,6 +427,8 @@ func TestSampleHand014(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pairs of ACE and KING with TEN high
 }
 
@@ -417,6 +445,8 @@ func TestSampleHand015(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// FullHouse, SEVEN over DUCE
 }
 
@@ -433,6 +463,8 @@ func TestSampleHand016(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Pairs of ACE and SIX with QUEEN high
 }
 
@@ -449,6 +481,8 @@ func TestSampleHand017(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// straight  with ACE High
 }
 
@@ -465,6 +499,8 @@ func TestSampleHand018(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// straight  with ACE High
 }
 
@@ -481,6 +517,8 @@ func TestSampleHand019(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Flush with Queen, TEN, NINE, FIVE, FOUR high
 }
 
@@ -497,6 +535,8 @@ func TestSampleHand020(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Flush with ACE, QUEEN, JACK, SIX, DUCE high
 }
 
@@ -513,6 +553,8 @@ func TestSampleHand021(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Flush with JACK, TEN, EIGHT, SIX, DUCE high
 }
 
@@ -529,6 +571,9 @@ func TestSampleHand022(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	//fmt.Printf("debug: %+v\n", phd.which)
+	fmt.Printf("%v\n", phd)
 	// FullHouse, SIX over EIGHT
 }
 
@@ -545,6 +590,9 @@ func TestSampleHand023(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("debug: %+v\n", phd.which)
+	fmt.Printf("%v\n", phd)
 	// Three of Kind ACE with QUEEN, EIGHT high
 }
 
@@ -560,6 +608,9 @@ func TestSampleHand024(t *testing.T) {
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
+
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 
 	// straight, EIGHT high
 }
@@ -625,7 +676,27 @@ func TestSampleHand028(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// Straight Flush
+}
+
+func TestSampleHand029(t *testing.T) {
+	d := Deck{
+		Card{ACE, CLUBS},
+		Card{ACE, HEARTS},
+		Card{QUEEN, DIAMONDS},
+		Card{TEN, HEARTS},
+		Card{ACE, SPADES},
+		Card{ACE, DIAMONDS},
+		Card{FOUR, HEARTS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
+	// Quad
 }
 
 func TestSampleHand000(t *testing.T) {
