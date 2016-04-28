@@ -378,16 +378,23 @@ func (cr *CardRanking) fillWithHighCards(xs []Index, nth int, bann ...Rank) {
 	panic(fmt.Sprintf("failed to fill %v", xs))
 }
 
-func CalcHand(xs Deck) *PokerHandDiscriptor {
-	cr := MakeCardRanking(xs)
+func (cr *CardRanking) findStraightFlush() (bool, *PokerHandDiscriptor) {
 	for _, p := range cr.straightFlush {
 		if len(p) > 0 {
-			return &PokerHandDiscriptor{
+			return true, &PokerHandDiscriptor{
 				ph:    StraightFlush,
-				xs:    xs,
+				xs:    cr.xs,
 				which: p,
 			}
 		}
+	}
+	return false, nil
+}
+
+func CalcHand(xs Deck) *PokerHandDiscriptor {
+	cr := MakeCardRanking(xs)
+	if found, phd := cr.findStraightFlush(); found {
+		return phd
 	}
 
 	for _, px := range cr.fours {
