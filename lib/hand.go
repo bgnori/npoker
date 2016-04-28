@@ -391,23 +391,31 @@ func (cr *CardRanking) findStraightFlush() (bool, *PokerHandDiscriptor) {
 	return false, nil
 }
 
+func (cr *CardRanking) findFourOfKind() (bool, *PokerHandDiscriptor) {
+	for r := HIACE; r > ACE; r -= 1 {
+		px := cr.fours[r]
+		for _, p := range px {
+			q := make([]Index, 5)
+			copy(q, p[0:4])
+			cr.fillWithHighCards(q, 4, cr.xs[q[0]].R)
+			return true, &PokerHandDiscriptor{
+				ph:    FourOfAKind,
+				xs:    cr.xs,
+				which: q,
+			}
+		}
+	}
+	return false, nil
+}
+
 func CalcHand(xs Deck) *PokerHandDiscriptor {
 	cr := MakeCardRanking(xs)
 	if found, phd := cr.findStraightFlush(); found {
 		return phd
 	}
 
-	for _, px := range cr.fours {
-		for _, p := range px {
-			q := make([]Index, 5)
-			copy(q, p[0:4])
-			cr.fillWithHighCards(q, 4, cr.xs[q[0]].R)
-			return &PokerHandDiscriptor{
-				ph:    FourOfAKind,
-				xs:    xs,
-				which: q,
-			}
-		}
+	if found, phd := cr.findFourOfKind(); found {
+		return phd
 	}
 
 	for full_r, threes := range cr.threes {

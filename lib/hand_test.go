@@ -699,6 +699,25 @@ func TestSampleHand029(t *testing.T) {
 	// Quad
 }
 
+func TestSampleHand030(t *testing.T) {
+	d := Deck{
+		Card{SIX, CLUBS},
+		Card{SIX, HEARTS},
+		Card{SIX, SPADES},
+		Card{SIX, DIAMONDS},
+		Card{EIGHT, CLUBS},
+		Card{EIGHT, HEARTS},
+		Card{EIGHT, SPADES},
+		Card{EIGHT, DIAMONDS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
+	// Quad x 2
+}
+
 func TestSampleHand000(t *testing.T) {
 	d := Deck{
 		Card{EIGHT, SPADES},
