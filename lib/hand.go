@@ -408,6 +408,31 @@ func (cr *CardRanking) findFourOfKind() (bool, *PokerHandDiscriptor) {
 	return false, nil
 }
 
+func (cr *CardRanking) findFullHouse() (bool, *PokerHandDiscriptor) {
+	for full_r := HIACE; full_r > ACE; full_r -= 1 {
+		threes := cr.threes[full_r]
+		for _, p := range threes {
+			ys := make([]Index, 5)
+			copy(ys, p[0:3])
+			for pair_r := HIACE; pair_r > ACE; pair_r -= 1 {
+				pairs := cr.pairs[pair_r]
+				if pair_r != full_r {
+					for _, q := range pairs {
+						ys[3] = q[0]
+						ys[4] = q[1]
+						return true, &PokerHandDiscriptor{
+							ph:    FullHouse,
+							xs:    cr.xs,
+							which: ys,
+						}
+					}
+				}
+			}
+		}
+	}
+	return false, nil
+}
+
 func CalcHand(xs Deck) *PokerHandDiscriptor {
 	cr := MakeCardRanking(xs)
 	if found, phd := cr.findStraightFlush(); found {
@@ -418,24 +443,8 @@ func CalcHand(xs Deck) *PokerHandDiscriptor {
 		return phd
 	}
 
-	for full_r, threes := range cr.threes {
-		for _, p := range threes {
-			ys := make([]Index, 5)
-			copy(ys, p[0:3])
-			for pair_r, pairs := range cr.pairs {
-				if pair_r != full_r {
-					for _, q := range pairs {
-						ys[3] = q[0]
-						ys[4] = q[1]
-						return &PokerHandDiscriptor{
-							ph:    FullHouse,
-							xs:    xs,
-							which: ys,
-						}
-					}
-				}
-			}
-		}
+	if found, phd := cr.findFullHouse(); found {
+		return phd
 	}
 
 	for _, s := range SuitPermOne() {

@@ -628,6 +628,8 @@ func TestSampleHand025(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
 	// FullHouse, Jack over Queen,
 }
 
@@ -716,6 +718,25 @@ func TestSampleHand030(t *testing.T) {
 	phd := CalcHand(d)
 	fmt.Printf("%v\n", phd)
 	// Quad x 2
+}
+
+func TestSampleHand031(t *testing.T) {
+	d := Deck{
+		Card{SIX, CLUBS},
+		Card{SIX, HEARTS},
+		Card{SIX, SPADES},
+		Card{EIGHT, CLUBS},
+		Card{EIGHT, HEARTS},
+		Card{EIGHT, SPADES},
+		Card{FOUR, CLUBS},
+		Card{FOUR, DIAMONDS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
+	// FullHouse. EIGHT over SIX
 }
 
 func TestSampleHand000(t *testing.T) {
