@@ -433,6 +433,33 @@ func (cr *CardRanking) findFullHouse() (bool, *PokerHandDiscriptor) {
 	return false, nil
 }
 
+func (cr *CardRanking) findFlush() (bool, *PokerHandDiscriptor) {
+	for _, s := range SuitPermOne() {
+		if found, p := cr.findFlushOf(s[0]); found {
+			return true, &PokerHandDiscriptor{
+				ph:    Flush,
+				xs:    cr.xs,
+				which: p,
+			}
+		}
+	}
+	return false, nil
+}
+
+func (cr *CardRanking) findStraight() (bool, *PokerHandDiscriptor) {
+	for _, p := range cr.straight {
+		if len(p) > 0 {
+			return true, &PokerHandDiscriptor{
+				ph:    Straight,
+				xs:    cr.xs,
+				which: p,
+			}
+		}
+	}
+
+	return false, nil
+}
+
 func CalcHand(xs Deck) *PokerHandDiscriptor {
 	cr := MakeCardRanking(xs)
 	if found, phd := cr.findStraightFlush(); found {
@@ -447,24 +474,12 @@ func CalcHand(xs Deck) *PokerHandDiscriptor {
 		return phd
 	}
 
-	for _, s := range SuitPermOne() {
-		if found, p := cr.findFlushOf(s[0]); found {
-			return &PokerHandDiscriptor{
-				ph:    Flush,
-				xs:    xs,
-				which: p,
-			}
-		}
+	if found, phd := cr.findFlush(); found {
+		return phd
 	}
 
-	for _, p := range cr.straight {
-		if len(p) > 0 {
-			return &PokerHandDiscriptor{
-				ph:    Straight,
-				xs:    xs,
-				which: p,
-			}
-		}
+	if found, phd := cr.findStraight(); found {
+		return phd
 	}
 
 	for _, px := range cr.threes {
