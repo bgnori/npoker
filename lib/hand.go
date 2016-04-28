@@ -460,6 +460,68 @@ func (cr *CardRanking) findStraight() (bool, *PokerHandDiscriptor) {
 	return false, nil
 }
 
+func (cr *CardRanking) findThreeOfKind() (bool, *PokerHandDiscriptor) {
+	for r := HIACE; r > ACE; r -= 1 {
+		px := cr.threes[r]
+		for _, p := range px {
+			q := make([]Index, 5)
+			copy(q, p[0:3])
+			cr.fillWithHighCards(q, 3, cr.xs[q[0]].R)
+			return true, &PokerHandDiscriptor{
+				ph:    ThreeOfAKind,
+				xs:    cr.xs,
+				which: q,
+			}
+		}
+	}
+
+	return false, nil
+}
+
+func (cr *CardRanking) findTwoPairs() (bool, *PokerHandDiscriptor) {
+	for high_r := HIACE; high_r > ACE; high_r -= 1 {
+		high_x := cr.pairs[high_r]
+		for _, high := range high_x {
+			q := make([]Index, 5)
+			copy(q[0:2], high[0:2])
+			for low_r := high_r - 1; low_r > ACE; low_r -= 1 {
+				if high_r != low_r {
+					low_x := cr.pairs[low_r]
+					for _, low := range low_x {
+						copy(q[2:4], low[0:2])
+						cr.fillWithHighCards(q, 4, Rank(high_r), Rank(low_r))
+						return true, &PokerHandDiscriptor{
+							ph:    TwoPair,
+							xs:    cr.xs,
+							which: q,
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false, nil
+}
+
+func (cr *CardRanking) findOnePair() (bool, *PokerHandDiscriptor) {
+	for r := HIACE; r > ACE; r -= 1 {
+		px := cr.pairs[r]
+		for _, p := range px {
+			q := make([]Index, 5)
+			copy(q[0:2], p[0:2])
+			cr.fillWithHighCards(q, 2, Rank(r))
+			return true, &PokerHandDiscriptor{
+				ph:    OnePair,
+				xs:    cr.xs,
+				which: q,
+			}
+		}
+	}
+
+	return false, nil
+}
+
 func CalcHand(xs Deck) *PokerHandDiscriptor {
 	cr := MakeCardRanking(xs)
 	if found, phd := cr.findStraightFlush(); found {
@@ -482,50 +544,12 @@ func CalcHand(xs Deck) *PokerHandDiscriptor {
 		return phd
 	}
 
-	for _, px := range cr.threes {
-		for _, p := range px {
-			q := make([]Index, 5)
-			copy(q, p[0:3])
-			cr.fillWithHighCards(q, 3, cr.xs[q[0]].R)
-			return &PokerHandDiscriptor{
-				ph:    ThreeOfAKind,
-				xs:    xs,
-				which: q,
-			}
-		}
+	if found, phd := cr.findThreeOfKind(); found {
+		return phd
 	}
 
-	for high_r, high_x := range cr.pairs {
-		for _, high := range high_x {
-			q := make([]Index, 5)
-			copy(q[0:2], high[0:2])
-			for low_r, low_x := range cr.pairs {
-				if high_r != low_r {
-					for _, low := range low_x {
-						copy(q[2:4], low[0:2])
-						cr.fillWithHighCards(q, 4, Rank(high_r), Rank(low_r))
-						return &PokerHandDiscriptor{
-							ph:    TwoPair,
-							xs:    xs,
-							which: q,
-						}
-					}
-				}
-			}
-		}
-	}
-
-	for r, px := range cr.pairs {
-		for _, p := range px {
-			q := make([]Index, 5)
-			copy(q[0:2], p[0:2])
-			cr.fillWithHighCards(q, 2, Rank(r))
-			return &PokerHandDiscriptor{
-				ph:    OnePair,
-				xs:    xs,
-				which: q,
-			}
-		}
+	if found, phd := cr.findTwoPairs(); found {
+		return phd
 	}
 
 	q := make([]Index, 5)

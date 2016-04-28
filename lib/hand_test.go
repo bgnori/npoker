@@ -777,6 +777,24 @@ func TestSampleHand033(t *testing.T) {
 	// Straight, ACE High
 }
 
+func TestSampleHand034(t *testing.T) {
+	d := Deck{
+		Card{EIGHT, SPADES},
+		Card{EIGHT, DIAMONDS},
+		Card{TEN, HEARTS},
+		Card{TEN, DIAMONDS},
+		Card{SIX, SPADES},
+		Card{SIX, CLUBS},
+		Card{ACE, CLUBS},
+	}
+	cr := MakeCardRanking(d)
+	fmt.Printf("%v\n", cr)
+
+	// nothing with Queen high,
+	phd := CalcHand(d)
+	fmt.Printf("%v\n", phd)
+}
+
 func TestSampleHand000(t *testing.T) {
 	d := Deck{
 		Card{EIGHT, SPADES},
