@@ -194,7 +194,7 @@ func TestSampleHand001(t *testing.T) {
 	fmt.Printf("%v\n", cr)
 
 	phd := CalcHand(d)
-	fmt.Printf("%v\n", phd)
+	fmt.Printf("%+v\n", phd)
 	// nothing with QUEEN, TEN, NINE, SIX, FOUR high,
 }
 
@@ -663,6 +663,7 @@ func TestSampleHand027(t *testing.T) {
 	fmt.Printf("%v\n", cr)
 
 	// A pair , with Ace King, Jack High
+	fmt.Printf("%v\n", CalcHand(d))
 }
 
 func TestSampleHand028(t *testing.T) {
@@ -811,84 +812,98 @@ func TestSampleHand000(t *testing.T) {
 	// nothing with Queen high,
 }
 
-func SmokeCardRanking() {
-	d := Deck{
-		Card{TEN, CLUBS},
-		Card{EIGHT, HEARTS},
-		Card{JACK, DIAMONDS},
-		Card{SEVEN, HEARTS},
-		Card{NINE, SPADES},
+func TestSampleGame001(t *testing.T) {
+	PlayerOneHole := Deck{
+		Card{JACK, SPADES},
+		Card{JACK, CLUBS},
+	}
+	// FullHouse, Jack over Queen,
+
+	PlayerTwoHole := Deck{
 		Card{ACE, SPADES},
-		Card{TEN, HEARTS},
 		Card{ACE, HEARTS},
-		Card{ACE, CLUBS},
-		Card{KING, CLUBS},
-		Card{KING, SPADES},
+	}
+	// Two pairs, Aces, Queens, with JACK High
+
+	PlayerThreeHole := Deck{
 		Card{KING, DIAMONDS},
 		Card{ACE, DIAMONDS},
-		Card{DUCE, HEARTS},
 	}
-	fmt.Printf("%v\n", d)
-	cr := MakeCardRanking(d)
-	fmt.Printf("%v\n", cr)
-}
+	// A pair , with Ace King, Jack High
 
-func SmokeOnePair() {
-	fmt.Println("SmokeOnePair")
-	d := Deck{
-		Card{ACE, CLUBS},
-		Card{ACE, HEARTS},
+	board := Deck{
+		Card{JACK, DIAMONDS},
+		Card{TREY, SPADES},
+		Card{QUEEN, CLUBS},
 		Card{QUEEN, DIAMONDS},
-		Card{TEN, HEARTS},
-		Card{EIGHT, SPADES},
-		Card{FIVE, DIAMONDS},
-		Card{FOUR, HEARTS},
+		Card{DUCE, CLUBS},
 	}
-	cr := MakeCardRanking(d)
-	fmt.Printf("%v\n", cr)
-}
+	sd := MakeShowDown(board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
+	fmt.Printf("%+v\n", sd)
 
-func SmokeTwoPair() {
-	fmt.Println("SmokeTwoPair")
-	d := Deck{}
-	cr := MakeCardRanking(d)
-	fmt.Printf("%v\n", cr)
-}
-
-func SmokeThreeOfAKind() {
-	d := Deck{
-		Card{ACE, CLUBS},
-		Card{ACE, HEARTS},
-		Card{QUEEN, DIAMONDS},
-		Card{TEN, HEARTS},
-		Card{EIGHT, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{FOUR, HEARTS},
+	for i, v := range DistrubuteChips(100, 10, 0, sd) {
+		fmt.Printf("player %d got %d.\n", i, v)
 	}
-	fmt.Println("SmokeThreeOfAKind")
-	cr := MakeCardRanking(d)
-	fmt.Printf("%v\n", cr)
 }
 
-func SmokeFourOfAKind() {
-	d := Deck{
-		Card{ACE, CLUBS},
-		Card{ACE, HEARTS},
+func TestSampleGame002(t *testing.T) {
+	PlayerOneHole := Deck{
+		Card{SIX, SPADES},
+		Card{SIX, CLUBS},
+	}
+
+	PlayerTwoHole := Deck{
+		Card{FIVE, SPADES},
+		Card{FIVE, HEARTS},
+	}
+
+	PlayerThreeHole := Deck{
+		Card{KING, DIAMONDS},
+		Card{NINE, DIAMONDS},
+	}
+
+	board := Deck{
+		Card{TEN, DIAMONDS},
+		Card{TEN, SPADES},
+		Card{QUEEN, CLUBS},
 		Card{QUEEN, DIAMONDS},
-		Card{TEN, HEARTS},
+		Card{ACE, CLUBS},
+	}
+	sd := MakeShowDown(board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
+	fmt.Printf("%+v\n", sd)
+
+	for i, v := range DistrubuteChips(100, 10, 0, sd) {
+		fmt.Printf("player %d got %d.\n", i, v)
+	}
+}
+
+func TestSampleGame003(t *testing.T) {
+	PlayerOneHole := Deck{
+		Card{SIX, SPADES},
+		Card{SIX, CLUBS},
+	}
+
+	PlayerTwoHole := Deck{
 		Card{ACE, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{FOUR, HEARTS},
+		Card{SEVEN, HEARTS},
 	}
-	fmt.Println("SmokeFourOfAKind")
-	cr := MakeCardRanking(d)
-	fmt.Printf("%v\n", cr)
-}
 
-func SmokeHand() {
-	SmokeCardRanking()
-	SmokeOnePair()
-	SmokeTwoPair()
-	SmokeThreeOfAKind()
-	SmokeFourOfAKind()
+	PlayerThreeHole := Deck{
+		Card{ACE, DIAMONDS},
+		Card{NINE, DIAMONDS},
+	}
+
+	board := Deck{
+		Card{TEN, DIAMONDS},
+		Card{TEN, SPADES},
+		Card{QUEEN, CLUBS},
+		Card{QUEEN, DIAMONDS},
+		Card{DUCE, CLUBS},
+	}
+	sd := MakeShowDown(board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
+	fmt.Printf("%+v\n", sd)
+
+	for i, v := range DistrubuteChips(100, 10, 0, sd) {
+		fmt.Printf("player %d got %d.\n", i, v)
+	}
 }

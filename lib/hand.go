@@ -5,10 +5,11 @@ import (
 	"strings"
 )
 
-type PokerHands int
+type PokerHandRanking int
 
 const (
-	HighCard PokerHands = iota
+	DeadHand PokerHandRanking = iota
+	HighCard
 	OnePair
 	TwoPair
 	ThreeOfAKind
@@ -20,6 +21,7 @@ const (
 )
 
 var pokerHandsString = []string{
+	"dead hand",
 	"high card",
 	"one pair",
 	"two pair",
@@ -31,14 +33,8 @@ var pokerHandsString = []string{
 	"straight flush",
 }
 
-func (ph PokerHands) String() string {
-	return pokerHandsString[ph]
-}
-
-type PokerHandDiscriptor struct {
-	ph    PokerHands
-	xs    Deck
-	which []Index
+func (phr PokerHandRanking) String() string {
+	return pokerHandsString[phr]
 }
 
 type CardRanking struct {
@@ -50,6 +46,12 @@ type CardRanking struct {
 	fours         [][][]Index // ranks nth (index, index, index, index)
 	straight      [][]Index   //ranks (index, index, index, index)
 	straightFlush [][]Index   // suit, (index, index, index, index, index)
+}
+
+type PokerHandDiscriptor struct {
+	phr   PokerHandRanking
+	xs    Deck
+	which []Index
 }
 
 func prepareCardRanking(d Deck) CardRanking {
@@ -345,7 +347,7 @@ func (cr CardRanking) String() string {
 
 func (phd *PokerHandDiscriptor) String() string {
 	var xs []string
-	xs = append(xs, fmt.Sprintf("%v", phd.ph))
+	xs = append(xs, fmt.Sprintf("%v", phd.phr))
 	xs = append(xs, fmt.Sprintf("%v %v %v %v %v",
 		phd.xs[phd.which[0]],
 		phd.xs[phd.which[1]],
@@ -354,6 +356,17 @@ func (phd *PokerHandDiscriptor) String() string {
 		phd.xs[phd.which[4]],
 	))
 	return strings.Join(xs, ",")
+}
+
+func (phd *PokerHandDiscriptor) Comp(other *PokerHandDiscriptor) int {
+	if phd.phr > other.phr {
+		return 1
+	}
+	if phd.phr < other.phr {
+		return -1
+	}
+	return 0
+
 }
 
 func (cr *CardRanking) isBanned(h Index, bann []Rank) bool {
@@ -382,7 +395,7 @@ func (cr *CardRanking) findStraightFlush() (bool, *PokerHandDiscriptor) {
 	for _, p := range cr.straightFlush {
 		if len(p) > 0 {
 			return true, &PokerHandDiscriptor{
-				ph:    StraightFlush,
+				phr:   StraightFlush,
 				xs:    cr.xs,
 				which: p,
 			}
@@ -399,7 +412,7 @@ func (cr *CardRanking) findFourOfKind() (bool, *PokerHandDiscriptor) {
 			copy(q, p[0:4])
 			cr.fillWithHighCards(q, 4, cr.xs[q[0]].R)
 			return true, &PokerHandDiscriptor{
-				ph:    FourOfAKind,
+				phr:   FourOfAKind,
 				xs:    cr.xs,
 				which: q,
 			}
@@ -421,7 +434,7 @@ func (cr *CardRanking) findFullHouse() (bool, *PokerHandDiscriptor) {
 						ys[3] = q[0]
 						ys[4] = q[1]
 						return true, &PokerHandDiscriptor{
-							ph:    FullHouse,
+							phr:   FullHouse,
 							xs:    cr.xs,
 							which: ys,
 						}
@@ -437,7 +450,7 @@ func (cr *CardRanking) findFlush() (bool, *PokerHandDiscriptor) {
 	for _, s := range SuitPermOne() {
 		if found, p := cr.findFlushOf(s[0]); found {
 			return true, &PokerHandDiscriptor{
-				ph:    Flush,
+				phr:   Flush,
 				xs:    cr.xs,
 				which: p,
 			}
@@ -450,7 +463,7 @@ func (cr *CardRanking) findStraight() (bool, *PokerHandDiscriptor) {
 	for _, p := range cr.straight {
 		if len(p) > 0 {
 			return true, &PokerHandDiscriptor{
-				ph:    Straight,
+				phr:   Straight,
 				xs:    cr.xs,
 				which: p,
 			}
@@ -468,7 +481,7 @@ func (cr *CardRanking) findThreeOfKind() (bool, *PokerHandDiscriptor) {
 			copy(q, p[0:3])
 			cr.fillWithHighCards(q, 3, cr.xs[q[0]].R)
 			return true, &PokerHandDiscriptor{
-				ph:    ThreeOfAKind,
+				phr:   ThreeOfAKind,
 				xs:    cr.xs,
 				which: q,
 			}
@@ -491,7 +504,7 @@ func (cr *CardRanking) findTwoPairs() (bool, *PokerHandDiscriptor) {
 						copy(q[2:4], low[0:2])
 						cr.fillWithHighCards(q, 4, Rank(high_r), Rank(low_r))
 						return true, &PokerHandDiscriptor{
-							ph:    TwoPair,
+							phr:   TwoPair,
 							xs:    cr.xs,
 							which: q,
 						}
@@ -512,7 +525,7 @@ func (cr *CardRanking) findOnePair() (bool, *PokerHandDiscriptor) {
 			copy(q[0:2], p[0:2])
 			cr.fillWithHighCards(q, 2, Rank(r))
 			return true, &PokerHandDiscriptor{
-				ph:    OnePair,
+				phr:   OnePair,
 				xs:    cr.xs,
 				which: q,
 			}
@@ -552,11 +565,89 @@ func CalcHand(xs Deck) *PokerHandDiscriptor {
 		return phd
 	}
 
+	if found, phd := cr.findOnePair(); found {
+		return phd
+	}
+
 	q := make([]Index, 5)
 	cr.fillWithHighCards(q, 0)
 	return &PokerHandDiscriptor{
-		ph:    HighCard,
+		phr:   HighCard,
 		xs:    xs,
 		which: q,
 	}
+}
+
+type ShowDown struct {
+	Holes   []Deck
+	PHD     []*PokerHandDiscriptor
+	Winners []int
+}
+
+func (sd *ShowDown) String() string {
+	var xs []string
+
+	for i, h := range sd.Holes {
+		xs = append(xs, fmt.Sprintf("Player %d had %v => %v\n", i, h, sd.PHD[i]))
+	}
+	for _, idx := range sd.Winners {
+		xs = append(xs, fmt.Sprintf("Player %d won.\n", idx))
+	}
+	return strings.Join(xs, "")
+}
+
+func MakeShowDown(board Deck, holes ...Deck) *ShowDown {
+	sd := &ShowDown{
+		Holes:   holes,
+		PHD:     make([]*PokerHandDiscriptor, len(holes)),
+		Winners: nil,
+	}
+
+	for i, h := range holes {
+		sd.PHD[i] = CalcHand(Join(h, board))
+	}
+	w := DeadHand //Sentinel
+	sd.Winners = nil
+
+	for i, phd := range sd.PHD {
+		if w < phd.phr {
+			w = phd.phr
+			sd.Winners = append([]int(nil), i)
+		} else if w == phd.phr {
+			sd.Winners = append(sd.Winners, i)
+		}
+	}
+	return sd
+}
+
+func (sd *ShowDown) next(p int) int {
+	r := p + 1
+	if r >= len(sd.PHD) {
+		return 0
+	}
+	return r
+}
+
+func DistrubuteChips(pot int, denom int, btn int, sd *ShowDown) []int {
+	if pot%denom != 0 {
+		panic(fmt.Sprintf("bad pot size! got %d while denom is %d", pot, denom))
+	}
+	if btn < 0 || len(sd.PHD) <= btn {
+		panic("bad btn position")
+	}
+	xs := make([]int, len(sd.Holes))
+	chunk := pot / denom
+	d := len(sd.Winners)
+	for _, idx := range sd.Winners {
+		xs[idx] = chunk / d * denom
+	}
+	idx := sd.next(btn)
+	for rest := 1; rest <= chunk%d; rest += 1 {
+		xs[idx] += denom
+		idx = sd.next(idx)
+	}
+	return xs
+}
+
+func RollOut(board Deck, players ...Deck) {
 }
