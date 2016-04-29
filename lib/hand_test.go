@@ -590,9 +590,8 @@ func TestSampleHand023(t *testing.T) {
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
 
-	phd := CalcHand(d)
-	fmt.Printf("debug: %+v\n", phd.which)
-	fmt.Printf("%v\n", phd)
+	ph := CalcHand(d)
+	fmt.Printf("%v\n", ph)
 	// Three of Kind ACE with QUEEN, EIGHT high
 }
 
