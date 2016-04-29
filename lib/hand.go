@@ -69,7 +69,10 @@ func Compare(a PokerHand, b PokerHand) int {
 	if a.Ranking() < b.Ranking() {
 		return -1
 	}
-	return a.compare(b)
+	if a.Ranking() == b.Ranking() {
+		return a.compare(b)
+	}
+	panic("never reach here")
 }
 
 type pokerHandBase struct {
@@ -101,6 +104,24 @@ func (base *pokerHandBase) String() string {
 		base.xs[base.which[4]],
 	))
 	return strings.Join(xs, ",")
+}
+
+type nullHand struct {
+	pokerHandBase
+}
+
+func (hc *nullHand) compare(other PokerHand) int {
+	return 0
+}
+
+func makeNullHand() PokerHand {
+	return &nullHand{
+		pokerHandBase{
+			phr:   DeadHand,
+			xs:    nil,
+			which: nil,
+		},
+	}
 }
 
 type highCard struct {
@@ -202,7 +223,7 @@ func (tp *twoPair) compare(other PokerHand) int {
 	if tp.xs[tp.low[0]].R > ot.xs[ot.low[0]].R {
 		return 1
 	}
-	return tp.highCard.compare(other)
+	return tp.highCard.compare(ot)
 }
 
 func (cr *CardRanking) findTwoPairs() (bool, PokerHand) {
@@ -851,15 +872,19 @@ func MakeShowDown(board Deck, holes ...Deck) *ShowDown {
 	for i, h := range holes {
 		sd.PokerHands[i] = CalcHand(Join(h, board))
 	}
-	w := DeadHand //Sentinel
+	var w PokerHand
+	w = makeNullHand()
 	sd.Winners = nil
 
 	for i, ph := range sd.PokerHands {
-		if w < ph.Ranking() {
-			w = ph.Ranking()
+		switch Compare(w, ph) {
+		case -1:
+			w = ph
 			sd.Winners = append([]int(nil), i)
-		} else if w == ph.Ranking() {
+		case 0:
 			sd.Winners = append(sd.Winners, i)
+		case 1:
+			//nothing
 		}
 	}
 	return sd
