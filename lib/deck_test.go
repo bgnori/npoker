@@ -52,3 +52,20 @@ func TestShuffle(t *testing.T) {
 		t.Errorf("full length is expected to be 52.")
 	}
 }
+
+func TestShrinkToDeck(t *testing.T) {
+	xs := BuildFullDeck()
+	xs.ShrinkTo(10)
+	if xs.Length() != 10 {
+		t.Errorf("length is expected to be 10. but got %d", xs.Length())
+	}
+
+}
+
+func TestCloneDeck(t *testing.T) {
+	xs := BuildFullDeck()
+	ys := xs.Clone()
+	if ys.Length() != 52 {
+		t.Errorf("length is expected to be 52, but got %d", xs.Length())
+	}
+}

@@ -49,6 +49,12 @@ func (d *Deck) Drop(c Card) {
 	panic("card not found")
 }
 
+func (d *Deck) Subtract(e Deck) {
+	for _, c := range e {
+		d.Drop(c)
+	}
+}
+
 func BuildFullDeck() *Deck {
 	d := new(Deck)
 	for s := CLUBS; s <= SPADES; s++ {
@@ -57,6 +63,16 @@ func BuildFullDeck() *Deck {
 		}
 	}
 	return d
+}
+
+func (d *Deck) Clone() Deck {
+	e := make([]Card, d.Length())
+	copy(e, []Card(*d))
+	return Deck(e)
+}
+
+func (d *Deck) ShrinkTo(count int) {
+	*d = []Card(*d)[0:count]
 }
 
 func Join(d Deck, e Deck) Deck {
