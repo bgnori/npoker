@@ -8,7 +8,7 @@ import (
 type PokerHandRanking int
 
 const (
-	DeadHand PokerHandRanking = iota
+	NullHand PokerHandRanking = iota
 	HighCard
 	OnePair
 	TwoPair
@@ -21,7 +21,7 @@ const (
 )
 
 var pokerHandsString = []string{
-	"dead hand",
+	"null hand",
 	"high card",
 	"one pair",
 	"two pair",
@@ -48,18 +48,13 @@ type CardRanking struct {
 	straightFlush [][]Index   // suit, (index, index, index, index, index)
 }
 
-type PokerHandDiscriptor struct {
-	phr   PokerHandRanking
-	xs    Deck
-	which []Index
-}
-
 type PokerHand interface {
 	Ranking() PokerHandRanking
 	All() Deck
 	Selected() []Index
 	String() string
-	compare(other PokerHand) int
+	GetR(i int) Rank // HIACE instead of ACE
+	ToCompare() []int
 }
 
 func Compare(a PokerHand, b PokerHand) int {
@@ -69,10 +64,18 @@ func Compare(a PokerHand, b PokerHand) int {
 	if a.Ranking() < b.Ranking() {
 		return -1
 	}
-	if a.Ranking() == b.Ranking() {
-		return a.compare(b)
+	xs := a.ToCompare()
+	ys := b.ToCompare()
+	for i, x := range xs {
+		y := ys[i]
+		if a.GetR(x) > b.GetR(y) {
+			return 1
+		}
+		if a.GetR(x) < b.GetR(y) {
+			return -1
+		}
 	}
-	panic("never reach here")
+	return 0
 }
 
 type pokerHandBase struct {
@@ -92,6 +95,13 @@ func (base *pokerHandBase) All() Deck {
 func (base *pokerHandBase) Selected() []Index {
 	return base.which
 }
+func (base *pokerHandBase) GetR(i int) Rank {
+	r := base.xs[base.which[i]].R
+	if r == ACE {
+		return HIACE
+	}
+	return r
+}
 
 func (base *pokerHandBase) String() string {
 	var xs []string
@@ -106,45 +116,27 @@ func (base *pokerHandBase) String() string {
 	return strings.Join(xs, ",")
 }
 
-type nullHand struct {
-	pokerHandBase
-}
+type nullHand struct{ pokerHandBase }
 
-func (hc *nullHand) compare(other PokerHand) int {
-	return 0
+func (hc *nullHand) ToCompare() []int {
+	return nil
 }
 
 func makeNullHand() PokerHand {
 	return &nullHand{
 		pokerHandBase{
-			phr:   DeadHand,
+			phr:   NullHand,
 			xs:    nil,
 			which: nil,
 		},
 	}
 }
 
-type highCard struct {
-	pokerHandBase
-	highcards []Index
-}
+type highCard struct{ pokerHandBase }
 
-func (hc *highCard) getR(i int) Rank {
-	return hc.xs[hc.highcards[i]].R
-}
-
-func (hc *highCard) compare(other PokerHand) int {
-	ot := other.(*highCard)
-
-	for i := 0; i < len(hc.highcards); i++ {
-		if hc.getR(i) < ot.getR(i) {
-			return -1
-		}
-		if hc.getR(i) > ot.getR(i) {
-			return 1
-		}
-	}
-	return 0
+func (hc *highCard) ToCompare() []int {
+	//index in selected.
+	return []int{0, 1, 2, 3, 4}
 }
 
 func (cr *CardRanking) findHighCard() (bool, PokerHand) {
@@ -156,25 +148,13 @@ func (cr *CardRanking) findHighCard() (bool, PokerHand) {
 			xs:    cr.xs,
 			which: q,
 		},
-		q,
 	}
 }
 
-type onePair struct {
-	highCard
-	pair []Index
-}
+type onePair struct{ pokerHandBase }
 
-func (op *onePair) compare(other PokerHand) int {
-	ot := other.(*onePair)
-
-	if op.xs[op.pair[0]].R < ot.xs[ot.pair[0]].R {
-		return -1
-	}
-	if op.xs[op.pair[0]].R > ot.xs[ot.pair[0]].R {
-		return 1
-	}
-	return op.highCard.compare(other)
+func (op *onePair) ToCompare() []int {
+	return []int{0, 2, 3, 4}
 }
 
 func (cr *CardRanking) findOnePair() (bool, PokerHand) {
@@ -185,45 +165,23 @@ func (cr *CardRanking) findOnePair() (bool, PokerHand) {
 			copy(q[0:2], p[0:2])
 			cr.fillWithHighCards(q, 2, Rank(r))
 			return true, &onePair{
-				highCard{
-					pokerHandBase{
-						phr:   OnePair,
-						xs:    cr.xs,
-						which: q,
-					},
-					q[2:5],
+				pokerHandBase{
+					phr:   OnePair,
+					xs:    cr.xs,
+					which: q,
 				},
-				p[0:2],
 			}
 		}
 	}
-
 	return false, nil
 }
 
 type twoPair struct {
-	highCard
-	high []Index
-	low  []Index
+	pokerHandBase
 }
 
-func (tp *twoPair) compare(other PokerHand) int {
-	ot := other.(*twoPair)
-
-	if tp.xs[tp.high[0]].R < ot.xs[ot.high[0]].R {
-		return -1
-	}
-	if tp.xs[tp.high[0]].R > ot.xs[ot.high[0]].R {
-		return 1
-	}
-
-	if tp.xs[tp.low[0]].R < ot.xs[ot.low[0]].R {
-		return -1
-	}
-	if tp.xs[tp.low[0]].R > ot.xs[ot.low[0]].R {
-		return 1
-	}
-	return tp.highCard.compare(ot)
+func (tp *twoPair) ToCompare() []int {
+	return []int{0, 2, 4}
 }
 
 func (cr *CardRanking) findTwoPairs() (bool, PokerHand) {
@@ -239,18 +197,12 @@ func (cr *CardRanking) findTwoPairs() (bool, PokerHand) {
 						copy(q[2:4], low[0:2])
 						cr.fillWithHighCards(q, 4, Rank(high_r), Rank(low_r))
 						return true, &twoPair{
-							highCard{
-								pokerHandBase{
-									phr:   TwoPair,
-									xs:    cr.xs,
-									which: q,
-								},
-								q[4:5],
+							pokerHandBase{
+								phr:   TwoPair,
+								xs:    cr.xs,
+								which: q,
 							},
-							q[0:2],
-							q[2:4],
 						}
-
 					}
 				}
 			}
@@ -260,20 +212,11 @@ func (cr *CardRanking) findTwoPairs() (bool, PokerHand) {
 }
 
 type threeOfKind struct {
-	highCard
-	three []Index
+	pokerHandBase
 }
 
-func (tok *threeOfKind) compare(other PokerHand) int {
-	ot := other.(*threeOfKind)
-
-	if tok.xs[tok.three[0]].R < ot.xs[ot.three[0]].R {
-		return -1
-	}
-	if tok.xs[tok.three[0]].R > ot.xs[ot.three[0]].R {
-		return 1
-	}
-	return tok.highCard.compare(other)
+func (tok *threeOfKind) ToCompare() []int {
+	return []int{0, 3, 4}
 }
 
 func (cr *CardRanking) findThreeOfKind() (bool, PokerHand) {
@@ -284,36 +227,23 @@ func (cr *CardRanking) findThreeOfKind() (bool, PokerHand) {
 			copy(q, p[0:3])
 			cr.fillWithHighCards(q, 3, cr.xs[q[0]].R)
 			return true, &threeOfKind{
-				highCard{
-					pokerHandBase{
-						phr:   ThreeOfAKind,
-						xs:    cr.xs,
-						which: q,
-					},
-					q[3:5],
+				pokerHandBase{
+					phr:   ThreeOfAKind,
+					xs:    cr.xs,
+					which: q,
 				},
-				q[0:3],
 			}
 		}
 	}
-
 	return false, nil
 }
 
 type straight struct {
 	pokerHandBase
-	straight []Index
 }
 
-func (s *straight) compare(other PokerHand) int {
-	t := other.(*straight)
-	if s.xs[s.straight[0]].R < t.xs[t.straight[0]].R {
-		return -1
-	}
-	if s.xs[s.straight[0]].R > t.xs[t.straight[0]].R {
-		return 1
-	}
-	return 0
+func (s *straight) ToCompare() []int {
+	return []int{0}
 }
 
 func (cr *CardRanking) findStraight() (bool, PokerHand) {
@@ -325,7 +255,6 @@ func (cr *CardRanking) findStraight() (bool, PokerHand) {
 					xs:    cr.xs,
 					which: p,
 				},
-				p,
 			}
 		}
 	}
@@ -334,24 +263,21 @@ func (cr *CardRanking) findStraight() (bool, PokerHand) {
 }
 
 type flush struct {
-	highCard
+	pokerHandBase
 }
 
-func (f *flush) compare(other PokerHand) int {
-	return f.highCard.compare(other)
+func (f *flush) ToCompare() []int {
+	return []int{0, 1, 2, 3, 4}
 }
 
 func (cr *CardRanking) findFlush() (bool, PokerHand) {
 	for _, s := range SuitPermOne() {
 		if found, p := cr.findFlushOf(s[0]); found {
 			return true, &flush{
-				highCard{
-					pokerHandBase{
-						phr:   Flush,
-						xs:    cr.xs,
-						which: p,
-					},
-					p,
+				pokerHandBase{
+					phr:   Flush,
+					xs:    cr.xs,
+					which: p,
 				},
 			}
 		}
@@ -362,27 +288,10 @@ func (cr *CardRanking) findFlush() (bool, PokerHand) {
 
 type fullhouse struct {
 	pokerHandBase
-	three []Index
-	pair  []Index
 }
 
-func (f *fullhouse) compare(other PokerHand) int {
-	g := other.(*fullhouse)
-
-	if f.xs[f.three[0]].R < g.xs[g.three[0]].R {
-		return -1
-	}
-	if f.xs[f.three[0]].R > g.xs[g.three[0]].R {
-		return 1
-	}
-
-	if f.xs[f.pair[0]].R < g.xs[g.pair[0]].R {
-		return -1
-	}
-	if f.xs[f.pair[0]].R > g.xs[g.pair[0]].R {
-		return 1
-	}
-	return 0
+func (f *fullhouse) ToCompare() []int {
+	return []int{0, 3}
 }
 
 func (cr *CardRanking) findFullHouse() (bool, PokerHand) {
@@ -403,8 +312,6 @@ func (cr *CardRanking) findFullHouse() (bool, PokerHand) {
 								xs:    cr.xs,
 								which: ys,
 							},
-							p[0:3],
-							q[0:2],
 						}
 					}
 				}
@@ -414,21 +321,10 @@ func (cr *CardRanking) findFullHouse() (bool, PokerHand) {
 	return false, nil
 }
 
-type fourOfKind struct {
-	highCard
-	four []Index
-}
+type fourOfKind struct{ pokerHandBase }
 
-func (f *fourOfKind) compare(other PokerHand) int {
-	g := other.(*fourOfKind)
-
-	if f.xs[f.four[0]].R < g.xs[g.four[0]].R {
-		return -1
-	}
-	if f.xs[f.four[0]].R > g.xs[g.four[0]].R {
-		return 1
-	}
-	return f.highCard.compare(other)
+func (f *fourOfKind) ToCompare() []int {
+	return []int{0, 4}
 }
 
 func (cr *CardRanking) findFourOfKind() (bool, PokerHand) {
@@ -439,40 +335,31 @@ func (cr *CardRanking) findFourOfKind() (bool, PokerHand) {
 			copy(q, p[0:4])
 			cr.fillWithHighCards(q, 4, cr.xs[q[0]].R)
 			return true, &fourOfKind{
-				highCard{
-					pokerHandBase{
-						phr:   FourOfAKind,
-						xs:    cr.xs,
-						which: q,
-					},
-					q[4:5],
+				pokerHandBase{
+					phr:   FourOfAKind,
+					xs:    cr.xs,
+					which: q,
 				},
-				q[0:4],
 			}
 		}
 	}
 	return false, nil
 }
 
-type straightFlush struct {
-	highCard
-}
+type straightFlush struct{ pokerHandBase }
 
-func (f *straightFlush) compare(other PokerHand) int {
-	return f.highCard.compare(other)
+func (f *straightFlush) ToCompare() []int {
+	return []int{0}
 }
 
 func (cr *CardRanking) findStraightFlush() (bool, PokerHand) {
 	for _, p := range cr.straightFlush {
 		if len(p) > 0 {
 			return true, &straightFlush{
-				highCard{
-					pokerHandBase{
-						phr:   StraightFlush,
-						xs:    cr.xs,
-						which: p,
-					},
-					p[0:1],
+				pokerHandBase{
+					phr:   StraightFlush,
+					xs:    cr.xs,
+					which: p,
 				},
 			}
 		}
@@ -771,17 +658,6 @@ func (cr CardRanking) String() string {
 	return strings.Join(xs, "\n")
 }
 
-func (phd *PokerHandDiscriptor) Comp(other *PokerHandDiscriptor) int {
-	if phd.phr > other.phr {
-		return 1
-	}
-	if phd.phr < other.phr {
-		return -1
-	}
-	return 0
-
-}
-
 func (cr *CardRanking) isBanned(h Index, bann []Rank) bool {
 	for _, r := range bann {
 		if cr.xs[h].R == r || (cr.xs[h].R == ACE && r == HIACE) {
@@ -917,7 +793,4 @@ func DistrubuteChips(pot int, denom int, btn int, sd *ShowDown) []int {
 		idx = sd.next(idx)
 	}
 	return xs
-}
-
-func RollOut(board Deck, players ...Deck) {
 }
