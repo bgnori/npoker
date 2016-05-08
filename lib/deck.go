@@ -29,11 +29,11 @@ func (d *Deck) Length() int {
 	return len([]Card(*d))
 }
 
-func (d *Deck) Shuffle() {
+func (d *Deck) Shuffle(r *rand.Rand) {
 	n := d.Length()
 	xs := []Card(*d)
 	for i := n - 1; i >= 0; i-- {
-		j := rand.Intn(i + 1)
+		j := r.Intn(i + 1)
 		xs[i], xs[j] = xs[j], xs[i]
 	}
 }
