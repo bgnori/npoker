@@ -48,9 +48,16 @@ func main() {
 	board := Deck{}
 
 	fmt.Printf("%v\n", board)
-	stat := RollOut(100, board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
-	players := []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole}
-	for i, count := range stat {
-		fmt.Printf("player %d has %s, won %d times.\n", i, players[i], count)
-	}
+	ex := NewRollOut(100, NewRX(board, []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole}))
+
+	ex.Run(4)
+
+	ex.Report([]Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole})
+
+	/*
+		players := []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole}
+		for i, count := range stat {
+			fmt.Printf("player %d has %s, won %d times.\n", i, players[i], count)
+		}
+	*/
 }

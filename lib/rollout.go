@@ -23,6 +23,11 @@ type Work interface {
 	Run() Result
 }
 
+type Experiment interface {
+	Run(int)
+	Report([]Deck)
+}
+
 type RX struct {
 	xs      Deck
 	board   Deck
@@ -68,8 +73,6 @@ func NewTrial(s rand.Source, r Runnable) Work {
 }
 
 func (t *Trial) Run() Result {
-	//defer t.Unlock()
-	//t.Lock()
 	r := t.r.Run(t.source)
 	return r
 }
@@ -84,36 +87,46 @@ func Seeder(count int, wch chan Work, r Runnable) {
 	}
 }
 
-func RollOut(trial int, board Deck, players ...Deck) []int {
-	stat := make([]int, len(players))
+type rollout struct {
+	sync.WaitGroup
+	trial    int
+	runnable Runnable
+	works    chan Work
+	results  chan Result
+	acc      interface{}
+}
 
-	wch := make(chan Work, 5)
-	rch := make(chan Result, 5)
+func NewRollOut(trial int, r Runnable) Experiment {
+	return &rollout{
+		trial:    trial,
+		runnable: r,
+		works:    make(chan Work, 5),
+		results:  make(chan Result, trial), // Ugh!
+	}
+}
 
-	var wg sync.WaitGroup
-
-	rx := NewRX(board, players)
-
+func (ro *rollout) Run(nworker int) {
+	ro.Add(1)
 	go func() {
-		for i := 0; i < trial; i++ {
-			wch <- NewTrial(
+		defer ro.Done()
+		for i := 0; i < ro.trial; i++ {
+			ro.works <- NewTrial(
 				rand.NewSource(time.Now().UnixNano()),
-				rx.Clone(),
+				ro.runnable.Clone(),
 			)
 		}
-		close(wch)
+		close(ro.works)
 	}()
 
-	for j := 0; j < 4; j++ {
-		wg.Add(1)
+	for i := 0; i < nworker; i++ {
+		ro.Add(1)
 		go func() {
-			defer wg.Done()
+			defer ro.Done()
 			for {
-				w, ok := <-wch
+				w, ok := <-ro.works
 				if ok {
-					//fmt.Printf("Running%d\n", w)
 					r := w.Run()
-					rch <- r
+					ro.results <- r
 				} else {
 					return
 				}
@@ -121,22 +134,20 @@ func RollOut(trial int, board Deck, players ...Deck) []int {
 		}()
 	}
 
-	go func() {
-		for {
-			r, ok := <-rch
-			if ok {
-				sd := r.(*ShowDown)
-				for _, w := range sd.Winners {
-					stat[w] += 1
-				}
-			} else {
-				return
-			}
-		}
-	}()
+	ro.Wait()
+	close(ro.results)
+	return
+}
 
-	wg.Wait()
-	close(rch)
-	fmt.Printf("Done.\n %+v", stat)
-	return stat
+func (ro *rollout) Report(players []Deck) {
+	stat := make([]int, len(players))
+	for r := range ro.results {
+		r := r.(*ShowDown)
+		for i, amount := range DistrubuteChips(1000, 1, 0, r) {
+			stat[i] += amount
+		}
+	}
+	for i, v := range stat {
+		fmt.Printf("player %d has %s, won %d times.\n", i, players[i], v/1000.0)
+	}
 }
