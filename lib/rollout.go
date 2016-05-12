@@ -1,8 +1,7 @@
 package npoker
 
 import (
-	"fmt"
-	//"strings"
+	//"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -12,142 +11,101 @@ type Result interface {
 	String() string
 }
 
+type Summary interface {
+	String() string
+}
+
+type Summarizer interface {
+	Zero() Summary
+	Fold(Summary, Result) Summary
+}
+
 type Runnable interface {
 	Clone() Runnable
 	Run(source rand.Source) Result
 }
 
-type Work interface {
-	Lock()
-	Unlock()
-	Run() Result
-}
-
-type Experiment interface {
-	Run(int)
-	Report([]Deck)
-}
-
-type RX struct {
-	xs      Deck
-	board   Deck
-	players []Deck
-}
-
-func NewRX(board Deck, players []Deck) Runnable {
-	xs := BuildFullDeck()
-	xs.Subtract(board)
-	for _, p := range players {
-		xs.Subtract(p)
-	}
-	return &RX{*xs, board, players}
-}
-
-func (x *RX) Clone() Runnable {
-	return &RX{
-		x.xs.Clone(),
-		x.board.Clone(),
-		x.players, //  Ugh!
-	}
-}
-
-func (x *RX) Run(source rand.Source) Result {
-	r := rand.New(source)
-	x.xs.Shuffle(r)
-	x.xs.ShrinkTo(5 - len(x.board))
-	river := Join(x.board, x.xs)
-	return MakeShowDown(river, x.players...)
-}
-
-type Trial struct {
-	sync.Mutex
-	source rand.Source
-	r      Runnable
-}
-
-func NewTrial(s rand.Source, r Runnable) Work {
-	return &Trial{
-		source: s,
-		r:      r,
-	}
-}
-
-func (t *Trial) Run() Result {
-	r := t.r.Run(t.source)
-	return r
-}
-
-func Seeder(count int, wch chan Work, r Runnable) {
-	for i := 0; i < count; i++ {
-		fmt.Printf("Seeder %d of %d \n", i, count)
-		wch <- NewTrial(
-			rand.NewSource(time.Now().UnixNano()),
-			r.Clone(),
-		)
-	}
-}
-
-type rollout struct {
-	sync.WaitGroup
-	trial    int
+type Seeded struct {
+	source   rand.Source
 	runnable Runnable
-	works    chan Work
-	results  chan Result
-	acc      interface{}
 }
 
-func NewRollOut(trial int, r Runnable) Experiment {
-	return &rollout{
-		trial:    trial,
-		runnable: r,
-		works:    make(chan Work, 5),
-		results:  make(chan Result, trial), // Ugh!
+type Runner interface {
+	Run()
+	Summary() Summary
+}
+
+type runner struct {
+	sync.WaitGroup
+	sync.Mutex
+	n          int
+	worker     int
+	runnable   Runnable
+	summarizer Summarizer
+	seeded     chan Seeded
+	results    chan Result
+	summary    Summary
+}
+
+func NewRunner(n int, worker int, r Runnable, s Summarizer) Runner {
+	return &runner{
+		n:          n,
+		runnable:   r,
+		summarizer: s,
+		worker:     worker,
+		seeded:     make(chan Seeded, 5),
+		results:    make(chan Result, n), // Ugh!
 	}
 }
 
-func (ro *rollout) Run(nworker int) {
+func (ro *runner) Run() {
 	ro.Add(1)
 	go func() {
 		defer ro.Done()
-		for i := 0; i < ro.trial; i++ {
-			ro.works <- NewTrial(
+		for i := 0; i < ro.n; i++ {
+			ro.seeded <- Seeded{
 				rand.NewSource(time.Now().UnixNano()),
 				ro.runnable.Clone(),
-			)
+			}
 		}
-		close(ro.works)
+		//fmt.Println("closing seeder")
+		close(ro.seeded)
 	}()
 
-	for i := 0; i < nworker; i++ {
+	for i := 0; i < ro.worker; i++ {
 		ro.Add(1)
 		go func() {
 			defer ro.Done()
-			for {
-				w, ok := <-ro.works
-				if ok {
-					r := w.Run()
-					ro.results <- r
-				} else {
-					return
-				}
+			for s := range ro.seeded {
+				//fmt.Printf("starting %+v\n", s.runnable)
+				ro.results <- s.runnable.Run(s.source)
 			}
 		}()
 	}
+
+	ro.Add(1)
+	go func() {
+		defer ro.Done()
+		x := ro.summarizer.Zero()
+		for i := 0; i < ro.n; i++ {
+			r := <-ro.results
+			//fmt.Printf("got result %+v\n", r)
+			x = ro.summarizer.Fold(x, r)
+		}
+		ro.Lock()
+		//fmt.Println("time to write back result")
+		ro.summary = x
+		ro.Unlock()
+	}()
 
 	ro.Wait()
 	close(ro.results)
 	return
 }
 
-func (ro *rollout) Report(players []Deck) {
-	stat := make([]int, len(players))
-	for r := range ro.results {
-		r := r.(*ShowDown)
-		for i, amount := range DistrubuteChips(1000, 1, 0, r) {
-			stat[i] += amount
-		}
-	}
-	for i, v := range stat {
-		fmt.Printf("player %d has %s, won %d times.\n", i, players[i], v/1000.0)
-	}
+func (ro *runner) Summary() Summary {
+	ro.Lock()
+	s := ro.summary
+	ro.Unlock()
+	return s
 }

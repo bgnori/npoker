@@ -3,6 +3,7 @@ package main
 import (
 	. "./lib"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -48,11 +49,18 @@ func main() {
 	board := Deck{}
 
 	fmt.Printf("%v\n", board)
-	ex := NewRollOut(100, NewRX(board, []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole}))
+	calc := NewEqCalc(board, []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole})
+	ex := NewRunner(100000, 1,
+		calc,
+		NewEqSummarizer(calc),
+	)
 
-	ex.Run(4)
+	start := time.Now()
+	ex.Run()
+	end := time.Now()
 
-	ex.Report([]Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole})
+	fmt.Printf("%f秒\n", (end.Sub(start)).Seconds())
+	fmt.Println(ex.Summary())
 
 	/*
 		players := []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole}
