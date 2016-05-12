@@ -50,7 +50,7 @@ func main() {
 
 	fmt.Printf("%v\n", board)
 	calc := NewEqCalc(board, []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole})
-	ex := NewRunner(100000, 1,
+	ex := NewRunner(1000000, 1,
 		calc,
 		NewEqSummarizer(calc),
 	)

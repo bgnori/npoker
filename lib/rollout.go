@@ -54,7 +54,7 @@ func NewRunner(n int, worker int, r Runnable, s Summarizer) Runner {
 		summarizer: s,
 		worker:     worker,
 		seeded:     make(chan Seeded, 5),
-		results:    make(chan Result, n), // Ugh!
+		results:    make(chan Result, 100), // Ugh!
 	}
 }
 
