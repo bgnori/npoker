@@ -46,7 +46,7 @@ func (d *Deck) Drop(c Card) {
 			return
 		}
 	}
-	panic("card not found")
+	panic(fmt.Sprintf("card %v, not found in %+v", c, xs))
 }
 
 func (d *Deck) Subtract(e Deck) {
