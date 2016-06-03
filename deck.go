@@ -21,7 +21,7 @@ func (d *Deck) Append(c Card) {
 func (d Deck) String() string {
 	var xs []string
 	for _, c := range []Card(d) {
-		xs = append(xs, fmt.Sprintf("%v%v", c.R, c.S))
+		xs = append(xs, fmt.Sprintf("%v%v", c.Rank(), c.Suit()))
 	}
 	return strings.Join(xs, ",")
 }
@@ -59,7 +59,7 @@ func BuildFullDeck() *Deck {
 	d := new(Deck)
 	for s := CLUBS; s <= SPADES; s++ {
 		for r := ACE; r <= KING; r++ {
-			d.Append(Card{r, s})
+			d.Append(NewCard(r, s))
 		}
 	}
 	return d

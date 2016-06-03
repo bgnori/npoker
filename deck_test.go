@@ -13,7 +13,7 @@ func deckhelper(t *testing.T, expected string, to_string Deck) {
 }
 
 func TestDeckString(t *testing.T) {
-	d := Deck{Card{ACE, SPADES}, Card{FOUR, HEARTS}}
+	d := Deck{NewCard(ACE, SPADES), NewCard(FOUR, HEARTS)}
 	deckhelper(t, "A\u2660,4\u2665", d)
 }
 
@@ -25,8 +25,8 @@ func TestFullDeck(t *testing.T) {
 }
 
 func TestDropDeck(t *testing.T) {
-	d := Deck{Card{ACE, SPADES}, Card{ACE, CLUBS}}
-	d.Drop(Card{ACE, SPADES})
+	d := Deck{NewCard(ACE, SPADES), NewCard(ACE, CLUBS)}
+	d.Drop(NewCard(ACE, SPADES))
 	if d.Length() != 1 {
 		t.Errorf("expected is 1.")
 	}
@@ -34,8 +34,8 @@ func TestDropDeck(t *testing.T) {
 }
 
 func TestJoinDeck(t *testing.T) {
-	d := Deck{Card{ACE, SPADES}, Card{ACE, CLUBS}}
-	e := Deck{Card{KING, HEARTS}, Card{KING, DIAMONDS}}
+	d := Deck{NewCard(ACE, SPADES), NewCard(ACE, CLUBS)}
+	e := Deck{NewCard(KING, HEARTS), NewCard(KING, DIAMONDS)}
 	f := Join(d, e)
 	if f.Length() != 4 {
 		t.Errorf("expected is 4.")

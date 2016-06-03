@@ -134,13 +134,13 @@ func TestCalcStraight(t *testing.T) {
 
 func TestCalcStraightDeck001(t *testing.T) {
 	d := Deck{
-		Card{ACE, CLUBS},
-		Card{TEN, DIAMONDS},
-		Card{JACK, HEARTS},
-		Card{KING, SPADES},
-		Card{NINE, CLUBS},
-		Card{EIGHT, DIAMONDS},
-		Card{QUEEN, HEARTS},
+		NewCard(ACE, CLUBS),
+		NewCard(TEN, DIAMONDS),
+		NewCard(JACK, HEARTS),
+		NewCard(KING, SPADES),
+		NewCard(NINE, CLUBS),
+		NewCard(EIGHT, DIAMONDS),
+		NewCard(QUEEN, HEARTS),
 	}
 	cr := prepareCardRanking(d)
 	cr.calcPairwise()
@@ -164,13 +164,13 @@ func TestCalcStraightDeck001(t *testing.T) {
 
 func TestCalcFlushDeck001(t *testing.T) {
 	d := Deck{
-		Card{ACE, SPADES},
-		Card{TEN, SPADES},
-		Card{JACK, SPADES},
-		Card{KING, SPADES},
-		Card{NINE, SPADES},
-		Card{EIGHT, SPADES},
-		Card{SIX, SPADES},
+		NewCard(ACE, SPADES),
+		NewCard(TEN, SPADES),
+		NewCard(JACK, SPADES),
+		NewCard(KING, SPADES),
+		NewCard(NINE, SPADES),
+		NewCard(EIGHT, SPADES),
+		NewCard(SIX, SPADES),
 	}
 	cr := prepareCardRanking(d)
 	cr.calcPairwise()
@@ -182,13 +182,13 @@ func TestCalc(t *testing.T) {
 
 func TestSampleHand001(t *testing.T) {
 	d := Deck{
-		Card{FOUR, CLUBS},
-		Card{TREY, CLUBS},
-		Card{NINE, SPADES},
-		Card{TEN, SPADES},
-		Card{SIX, CLUBS},
-		Card{DUCE, DIAMONDS},
-		Card{QUEEN, HEARTS},
+		NewCard(FOUR, CLUBS),
+		NewCard(TREY, CLUBS),
+		NewCard(NINE, SPADES),
+		NewCard(TEN, SPADES),
+		NewCard(SIX, CLUBS),
+		NewCard(DUCE, DIAMONDS),
+		NewCard(QUEEN, HEARTS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -200,13 +200,13 @@ func TestSampleHand001(t *testing.T) {
 
 func TestSampleHand002(t *testing.T) {
 	d := Deck{
-		Card{SEVEN, DIAMONDS},
-		Card{ACE, HEARTS},
-		Card{FOUR, HEARTS},
-		Card{TEN, SPADES},
-		Card{NINE, CLUBS},
-		Card{TREY, DIAMONDS},
-		Card{JACK, DIAMONDS},
+		NewCard(SEVEN, DIAMONDS),
+		NewCard(ACE, HEARTS),
+		NewCard(FOUR, HEARTS),
+		NewCard(TEN, SPADES),
+		NewCard(NINE, CLUBS),
+		NewCard(TREY, DIAMONDS),
+		NewCard(JACK, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -218,13 +218,13 @@ func TestSampleHand002(t *testing.T) {
 
 func TestSampleHand003(t *testing.T) {
 	d := Deck{
-		Card{EIGHT, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{TREY, HEARTS},
-		Card{SIX, DIAMONDS},
-		Card{SIX, CLUBS},
-		Card{JACK, CLUBS},
-		Card{SEVEN, CLUBS},
+		NewCard(EIGHT, SPADES),
+		NewCard(ACE, DIAMONDS),
+		NewCard(TREY, HEARTS),
+		NewCard(SIX, DIAMONDS),
+		NewCard(SIX, CLUBS),
+		NewCard(JACK, CLUBS),
+		NewCard(SEVEN, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -236,13 +236,13 @@ func TestSampleHand003(t *testing.T) {
 
 func TestSampleHand004(t *testing.T) {
 	d := Deck{
-		Card{SEVEN, CLUBS},
-		Card{TEN, SPADES},
-		Card{TEN, HEARTS},
-		Card{EIGHT, SPADES},
-		Card{FIVE, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{SIX, SPADES},
+		NewCard(SEVEN, CLUBS),
+		NewCard(TEN, SPADES),
+		NewCard(TEN, HEARTS),
+		NewCard(EIGHT, SPADES),
+		NewCard(FIVE, SPADES),
+		NewCard(ACE, DIAMONDS),
+		NewCard(SIX, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -254,13 +254,13 @@ func TestSampleHand004(t *testing.T) {
 
 func TestSampleHand005(t *testing.T) {
 	d := Deck{
-		Card{JACK, CLUBS},
-		Card{DUCE, CLUBS},
-		Card{NINE, SPADES},
-		Card{TEN, SPADES},
-		Card{TREY, CLUBS},
-		Card{EIGHT, CLUBS},
-		Card{FOUR, SPADES},
+		NewCard(JACK, CLUBS),
+		NewCard(DUCE, CLUBS),
+		NewCard(NINE, SPADES),
+		NewCard(TEN, SPADES),
+		NewCard(TREY, CLUBS),
+		NewCard(EIGHT, CLUBS),
+		NewCard(FOUR, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -272,13 +272,13 @@ func TestSampleHand005(t *testing.T) {
 
 func TestSampleHand006(t *testing.T) {
 	d := Deck{
-		Card{SIX, HEARTS},
-		Card{SIX, CLUBS},
-		Card{ACE, DIAMONDS},
-		Card{FIVE, SPADES},
-		Card{KING, HEARTS},
-		Card{TEN, HEARTS},
-		Card{SEVEN, CLUBS},
+		NewCard(SIX, HEARTS),
+		NewCard(SIX, CLUBS),
+		NewCard(ACE, DIAMONDS),
+		NewCard(FIVE, SPADES),
+		NewCard(KING, HEARTS),
+		NewCard(TEN, HEARTS),
+		NewCard(SEVEN, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -290,13 +290,13 @@ func TestSampleHand006(t *testing.T) {
 
 func TestSampleHand007(t *testing.T) {
 	d := Deck{
-		Card{FOUR, HEARTS},
-		Card{KING, SPADES},
-		Card{QUEEN, SPADES},
-		Card{TEN, HEARTS},
-		Card{KING, CLUBS},
-		Card{FOUR, SPADES},
-		Card{SEVEN, HEARTS},
+		NewCard(FOUR, HEARTS),
+		NewCard(KING, SPADES),
+		NewCard(QUEEN, SPADES),
+		NewCard(TEN, HEARTS),
+		NewCard(KING, CLUBS),
+		NewCard(FOUR, SPADES),
+		NewCard(SEVEN, HEARTS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -308,13 +308,13 @@ func TestSampleHand007(t *testing.T) {
 
 func TestSampleHand008(t *testing.T) {
 	d := Deck{
-		Card{EIGHT, SPADES},
-		Card{KING, SPADES},
-		Card{KING, HEARTS},
-		Card{FOUR, SPADES},
-		Card{SIX, SPADES},
-		Card{JACK, DIAMONDS},
-		Card{TREY, DIAMONDS},
+		NewCard(EIGHT, SPADES),
+		NewCard(KING, SPADES),
+		NewCard(KING, HEARTS),
+		NewCard(FOUR, SPADES),
+		NewCard(SIX, SPADES),
+		NewCard(JACK, DIAMONDS),
+		NewCard(TREY, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -326,13 +326,13 @@ func TestSampleHand008(t *testing.T) {
 
 func TestSampleHand009(t *testing.T) {
 	d := Deck{
-		Card{EIGHT, SPADES},
-		Card{EIGHT, DIAMONDS},
-		Card{TEN, DIAMONDS},
-		Card{SEVEN, CLUBS},
-		Card{TEN, CLUBS},
-		Card{FOUR, DIAMONDS},
-		Card{JACK, DIAMONDS},
+		NewCard(EIGHT, SPADES),
+		NewCard(EIGHT, DIAMONDS),
+		NewCard(TEN, DIAMONDS),
+		NewCard(SEVEN, CLUBS),
+		NewCard(TEN, CLUBS),
+		NewCard(FOUR, DIAMONDS),
+		NewCard(JACK, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -344,13 +344,13 @@ func TestSampleHand009(t *testing.T) {
 
 func TestSampleHand010(t *testing.T) {
 	d := Deck{
-		Card{SEVEN, SPADES},
-		Card{FIVE, SPADES},
-		Card{FIVE, HEARTS},
-		Card{NINE, CLUBS},
-		Card{TREY, DIAMONDS},
-		Card{FIVE, CLUBS},
-		Card{TREY, CLUBS},
+		NewCard(SEVEN, SPADES),
+		NewCard(FIVE, SPADES),
+		NewCard(FIVE, HEARTS),
+		NewCard(NINE, CLUBS),
+		NewCard(TREY, DIAMONDS),
+		NewCard(FIVE, CLUBS),
+		NewCard(TREY, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -362,13 +362,13 @@ func TestSampleHand010(t *testing.T) {
 
 func TestSampleHand011(t *testing.T) {
 	d := Deck{
-		Card{TEN, HEARTS},
-		Card{JACK, SPADES},
-		Card{JACK, DIAMONDS},
-		Card{SEVEN, DIAMONDS},
-		Card{JACK, HEARTS},
-		Card{FOUR, HEARTS},
-		Card{FOUR, CLUBS},
+		NewCard(TEN, HEARTS),
+		NewCard(JACK, SPADES),
+		NewCard(JACK, DIAMONDS),
+		NewCard(SEVEN, DIAMONDS),
+		NewCard(JACK, HEARTS),
+		NewCard(FOUR, HEARTS),
+		NewCard(FOUR, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -380,13 +380,13 @@ func TestSampleHand011(t *testing.T) {
 
 func TestSampleHand012(t *testing.T) {
 	d := Deck{
-		Card{KING, DIAMONDS},
-		Card{TREY, CLUBS},
-		Card{TEN, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{QUEEN, DIAMONDS},
-		Card{JACK, DIAMONDS},
-		Card{TEN, DIAMONDS},
+		NewCard(KING, DIAMONDS),
+		NewCard(TREY, CLUBS),
+		NewCard(TEN, SPADES),
+		NewCard(ACE, DIAMONDS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(JACK, DIAMONDS),
+		NewCard(TEN, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -398,13 +398,13 @@ func TestSampleHand012(t *testing.T) {
 
 func TestSampleHand013(t *testing.T) {
 	d := Deck{
-		Card{JACK, CLUBS},
-		Card{EIGHT, SPADES},
-		Card{QUEEN, SPADES},
-		Card{FIVE, CLUBS},
-		Card{JACK, DIAMONDS},
-		Card{NINE, HEARTS},
-		Card{FIVE, HEARTS},
+		NewCard(JACK, CLUBS),
+		NewCard(EIGHT, SPADES),
+		NewCard(QUEEN, SPADES),
+		NewCard(FIVE, CLUBS),
+		NewCard(JACK, DIAMONDS),
+		NewCard(NINE, HEARTS),
+		NewCard(FIVE, HEARTS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -416,13 +416,13 @@ func TestSampleHand013(t *testing.T) {
 
 func TestSampleHand014(t *testing.T) {
 	d := Deck{
-		Card{DUCE, DIAMONDS},
-		Card{ACE, SPADES},
-		Card{SEVEN, HEARTS},
-		Card{TEN, DIAMONDS},
-		Card{ACE, DIAMONDS},
-		Card{KING, SPADES},
-		Card{KING, CLUBS},
+		NewCard(DUCE, DIAMONDS),
+		NewCard(ACE, SPADES),
+		NewCard(SEVEN, HEARTS),
+		NewCard(TEN, DIAMONDS),
+		NewCard(ACE, DIAMONDS),
+		NewCard(KING, SPADES),
+		NewCard(KING, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -434,13 +434,13 @@ func TestSampleHand014(t *testing.T) {
 
 func TestSampleHand015(t *testing.T) {
 	d := Deck{
-		Card{SIX, CLUBS},
-		Card{SEVEN, DIAMONDS},
-		Card{SEVEN, CLUBS},
-		Card{QUEEN, CLUBS},
-		Card{DUCE, CLUBS},
-		Card{DUCE, SPADES},
-		Card{SEVEN, SPADES},
+		NewCard(SIX, CLUBS),
+		NewCard(SEVEN, DIAMONDS),
+		NewCard(SEVEN, CLUBS),
+		NewCard(QUEEN, CLUBS),
+		NewCard(DUCE, CLUBS),
+		NewCard(DUCE, SPADES),
+		NewCard(SEVEN, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -452,13 +452,13 @@ func TestSampleHand015(t *testing.T) {
 
 func TestSampleHand016(t *testing.T) {
 	d := Deck{
-		Card{ACE, CLUBS},
-		Card{SIX, HEARTS},
-		Card{ACE, SPADES},
-		Card{NINE, DIAMONDS},
-		Card{SEVEN, SPADES},
-		Card{SIX, SPADES},
-		Card{QUEEN, DIAMONDS},
+		NewCard(ACE, CLUBS),
+		NewCard(SIX, HEARTS),
+		NewCard(ACE, SPADES),
+		NewCard(NINE, DIAMONDS),
+		NewCard(SEVEN, SPADES),
+		NewCard(SIX, SPADES),
+		NewCard(QUEEN, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -470,13 +470,13 @@ func TestSampleHand016(t *testing.T) {
 
 func TestSampleHand017(t *testing.T) {
 	d := Deck{
-		Card{QUEEN, DIAMONDS},
-		Card{ACE, SPADES},
-		Card{TEN, SPADES},
-		Card{JACK, SPADES},
-		Card{JACK, HEARTS},
-		Card{KING, SPADES},
-		Card{QUEEN, SPADES},
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(ACE, SPADES),
+		NewCard(TEN, SPADES),
+		NewCard(JACK, SPADES),
+		NewCard(JACK, HEARTS),
+		NewCard(KING, SPADES),
+		NewCard(QUEEN, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -488,13 +488,13 @@ func TestSampleHand017(t *testing.T) {
 
 func TestSampleHand018(t *testing.T) {
 	d := Deck{
-		Card{JACK, HEARTS},
-		Card{KING, CLUBS},
-		Card{ACE, CLUBS},
-		Card{TEN, CLUBS},
-		Card{QUEEN, CLUBS},
-		Card{SIX, DIAMONDS},
-		Card{JACK, CLUBS},
+		NewCard(JACK, HEARTS),
+		NewCard(KING, CLUBS),
+		NewCard(ACE, CLUBS),
+		NewCard(TEN, CLUBS),
+		NewCard(QUEEN, CLUBS),
+		NewCard(SIX, DIAMONDS),
+		NewCard(JACK, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -506,13 +506,13 @@ func TestSampleHand018(t *testing.T) {
 
 func TestSampleHand019(t *testing.T) {
 	d := Deck{
-		Card{QUEEN, CLUBS},
-		Card{TREY, DIAMONDS},
-		Card{NINE, CLUBS},
-		Card{FIVE, CLUBS},
-		Card{FOUR, CLUBS},
-		Card{TEN, CLUBS},
-		Card{DUCE, CLUBS},
+		NewCard(QUEEN, CLUBS),
+		NewCard(TREY, DIAMONDS),
+		NewCard(NINE, CLUBS),
+		NewCard(FIVE, CLUBS),
+		NewCard(FOUR, CLUBS),
+		NewCard(TEN, CLUBS),
+		NewCard(DUCE, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -524,13 +524,13 @@ func TestSampleHand019(t *testing.T) {
 
 func TestSampleHand020(t *testing.T) {
 	d := Deck{
-		Card{ACE, SPADES},
-		Card{JACK, SPADES},
-		Card{DUCE, SPADES},
-		Card{SIX, SPADES},
-		Card{EIGHT, HEARTS},
-		Card{EIGHT, DIAMONDS},
-		Card{QUEEN, SPADES},
+		NewCard(ACE, SPADES),
+		NewCard(JACK, SPADES),
+		NewCard(DUCE, SPADES),
+		NewCard(SIX, SPADES),
+		NewCard(EIGHT, HEARTS),
+		NewCard(EIGHT, DIAMONDS),
+		NewCard(QUEEN, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -542,13 +542,13 @@ func TestSampleHand020(t *testing.T) {
 
 func TestSampleHand021(t *testing.T) {
 	d := Deck{
-		Card{TEN, SPADES},
-		Card{EIGHT, SPADES},
-		Card{DUCE, SPADES},
-		Card{SIX, SPADES},
-		Card{EIGHT, HEARTS},
-		Card{EIGHT, DIAMONDS},
-		Card{QUEEN, SPADES},
+		NewCard(TEN, SPADES),
+		NewCard(EIGHT, SPADES),
+		NewCard(DUCE, SPADES),
+		NewCard(SIX, SPADES),
+		NewCard(EIGHT, HEARTS),
+		NewCard(EIGHT, DIAMONDS),
+		NewCard(QUEEN, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -560,13 +560,13 @@ func TestSampleHand021(t *testing.T) {
 
 func TestSampleHand022(t *testing.T) {
 	d := Deck{
-		Card{SIX, HEARTS},
-		Card{SIX, DIAMONDS},
-		Card{DUCE, SPADES},
-		Card{SIX, SPADES},
-		Card{EIGHT, HEARTS},
-		Card{EIGHT, DIAMONDS},
-		Card{QUEEN, SPADES},
+		NewCard(SIX, HEARTS),
+		NewCard(SIX, DIAMONDS),
+		NewCard(DUCE, SPADES),
+		NewCard(SIX, SPADES),
+		NewCard(EIGHT, HEARTS),
+		NewCard(EIGHT, DIAMONDS),
+		NewCard(QUEEN, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -579,13 +579,13 @@ func TestSampleHand022(t *testing.T) {
 
 func TestSampleHand023(t *testing.T) {
 	d := Deck{
-		Card{ACE, DIAMONDS},
-		Card{ACE, HEARTS},
-		Card{FOUR, DIAMONDS},
-		Card{SIX, CLUBS},
-		Card{EIGHT, HEARTS},
-		Card{QUEEN, DIAMONDS},
-		Card{ACE, SPADES},
+		NewCard(ACE, DIAMONDS),
+		NewCard(ACE, HEARTS),
+		NewCard(FOUR, DIAMONDS),
+		NewCard(SIX, CLUBS),
+		NewCard(EIGHT, HEARTS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(ACE, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -597,13 +597,13 @@ func TestSampleHand023(t *testing.T) {
 
 func TestSampleHand024(t *testing.T) {
 	d := Deck{
-		Card{FIVE, CLUBS},
-		Card{SEVEN, SPADES},
-		Card{FOUR, DIAMONDS},
-		Card{SIX, CLUBS},
-		Card{EIGHT, HEARTS},
-		Card{QUEEN, DIAMONDS},
-		Card{ACE, SPADES},
+		NewCard(FIVE, CLUBS),
+		NewCard(SEVEN, SPADES),
+		NewCard(FOUR, DIAMONDS),
+		NewCard(SIX, CLUBS),
+		NewCard(EIGHT, HEARTS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(ACE, SPADES),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -616,13 +616,13 @@ func TestSampleHand024(t *testing.T) {
 
 func TestSampleHand025(t *testing.T) {
 	d := Deck{
-		Card{JACK, SPADES},
-		Card{JACK, CLUBS},
-		Card{JACK, DIAMONDS},
-		Card{TREY, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{DUCE, CLUBS},
+		NewCard(JACK, SPADES),
+		NewCard(JACK, CLUBS),
+		NewCard(JACK, DIAMONDS),
+		NewCard(TREY, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(DUCE, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -634,13 +634,13 @@ func TestSampleHand025(t *testing.T) {
 
 func TestSampleHand026(t *testing.T) {
 	d := Deck{
-		Card{ACE, SPADES},
-		Card{ACE, HEARTS},
-		Card{JACK, DIAMONDS},
-		Card{TREY, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{DUCE, CLUBS},
+		NewCard(ACE, SPADES),
+		NewCard(ACE, HEARTS),
+		NewCard(JACK, DIAMONDS),
+		NewCard(TREY, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(DUCE, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -650,13 +650,13 @@ func TestSampleHand026(t *testing.T) {
 
 func TestSampleHand027(t *testing.T) {
 	d := Deck{
-		Card{KING, DIAMONDS},
-		Card{ACE, DIAMONDS},
-		Card{JACK, DIAMONDS},
-		Card{TREY, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{DUCE, CLUBS},
+		NewCard(KING, DIAMONDS),
+		NewCard(ACE, DIAMONDS),
+		NewCard(JACK, DIAMONDS),
+		NewCard(TREY, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(DUCE, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -667,13 +667,13 @@ func TestSampleHand027(t *testing.T) {
 
 func TestSampleHand028(t *testing.T) {
 	d := Deck{
-		Card{KING, DIAMONDS},
-		Card{ACE, DIAMONDS},
-		Card{JACK, DIAMONDS},
-		Card{TREY, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{TEN, DIAMONDS},
+		NewCard(KING, DIAMONDS),
+		NewCard(ACE, DIAMONDS),
+		NewCard(JACK, DIAMONDS),
+		NewCard(TREY, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(TEN, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -685,13 +685,13 @@ func TestSampleHand028(t *testing.T) {
 
 func TestSampleHand029(t *testing.T) {
 	d := Deck{
-		Card{ACE, CLUBS},
-		Card{ACE, HEARTS},
-		Card{QUEEN, DIAMONDS},
-		Card{TEN, HEARTS},
-		Card{ACE, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{FOUR, HEARTS},
+		NewCard(ACE, CLUBS),
+		NewCard(ACE, HEARTS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(TEN, HEARTS),
+		NewCard(ACE, SPADES),
+		NewCard(ACE, DIAMONDS),
+		NewCard(FOUR, HEARTS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -703,14 +703,14 @@ func TestSampleHand029(t *testing.T) {
 
 func TestSampleHand030(t *testing.T) {
 	d := Deck{
-		Card{SIX, CLUBS},
-		Card{SIX, HEARTS},
-		Card{SIX, SPADES},
-		Card{SIX, DIAMONDS},
-		Card{EIGHT, CLUBS},
-		Card{EIGHT, HEARTS},
-		Card{EIGHT, SPADES},
-		Card{EIGHT, DIAMONDS},
+		NewCard(SIX, CLUBS),
+		NewCard(SIX, HEARTS),
+		NewCard(SIX, SPADES),
+		NewCard(SIX, DIAMONDS),
+		NewCard(EIGHT, CLUBS),
+		NewCard(EIGHT, HEARTS),
+		NewCard(EIGHT, SPADES),
+		NewCard(EIGHT, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -722,14 +722,14 @@ func TestSampleHand030(t *testing.T) {
 
 func TestSampleHand031(t *testing.T) {
 	d := Deck{
-		Card{SIX, CLUBS},
-		Card{SIX, HEARTS},
-		Card{SIX, SPADES},
-		Card{EIGHT, CLUBS},
-		Card{EIGHT, HEARTS},
-		Card{EIGHT, SPADES},
-		Card{FOUR, CLUBS},
-		Card{FOUR, DIAMONDS},
+		NewCard(SIX, CLUBS),
+		NewCard(SIX, HEARTS),
+		NewCard(SIX, SPADES),
+		NewCard(EIGHT, CLUBS),
+		NewCard(EIGHT, HEARTS),
+		NewCard(EIGHT, SPADES),
+		NewCard(FOUR, CLUBS),
+		NewCard(FOUR, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -741,13 +741,13 @@ func TestSampleHand031(t *testing.T) {
 
 func TestSampleHand032(t *testing.T) {
 	d := Deck{
-		Card{ACE, CLUBS},
-		Card{DUCE, HEARTS},
-		Card{TREY, DIAMONDS},
-		Card{FOUR, SPADES},
-		Card{FIVE, CLUBS},
-		Card{SIX, HEARTS},
-		Card{SEVEN, DIAMONDS},
+		NewCard(ACE, CLUBS),
+		NewCard(DUCE, HEARTS),
+		NewCard(TREY, DIAMONDS),
+		NewCard(FOUR, SPADES),
+		NewCard(FIVE, CLUBS),
+		NewCard(SIX, HEARTS),
+		NewCard(SEVEN, DIAMONDS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -759,15 +759,15 @@ func TestSampleHand032(t *testing.T) {
 
 func TestSampleHand033(t *testing.T) {
 	d := Deck{
-		Card{ACE, CLUBS},
-		Card{DUCE, HEARTS},
-		Card{TREY, DIAMONDS},
-		Card{FOUR, SPADES},
-		Card{FIVE, CLUBS},
-		Card{KING, HEARTS},
-		Card{QUEEN, DIAMONDS},
-		Card{JACK, SPADES},
-		Card{TEN, CLUBS},
+		NewCard(ACE, CLUBS),
+		NewCard(DUCE, HEARTS),
+		NewCard(TREY, DIAMONDS),
+		NewCard(FOUR, SPADES),
+		NewCard(FIVE, CLUBS),
+		NewCard(KING, HEARTS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(JACK, SPADES),
+		NewCard(TEN, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -779,13 +779,13 @@ func TestSampleHand033(t *testing.T) {
 
 func TestSampleHand034(t *testing.T) {
 	d := Deck{
-		Card{EIGHT, SPADES},
-		Card{EIGHT, DIAMONDS},
-		Card{TEN, HEARTS},
-		Card{TEN, DIAMONDS},
-		Card{SIX, SPADES},
-		Card{SIX, CLUBS},
-		Card{ACE, CLUBS},
+		NewCard(EIGHT, SPADES),
+		NewCard(EIGHT, DIAMONDS),
+		NewCard(TEN, HEARTS),
+		NewCard(TEN, DIAMONDS),
+		NewCard(SIX, SPADES),
+		NewCard(SIX, CLUBS),
+		NewCard(ACE, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -797,13 +797,13 @@ func TestSampleHand034(t *testing.T) {
 
 func TestSampleHand000(t *testing.T) {
 	d := Deck{
-		Card{EIGHT, SPADES},
-		Card{ACE, DIAMONDS},
-		Card{TREY, HEARTS},
-		Card{SIX, DIAMONDS},
-		Card{SIX, CLUBS},
-		Card{JACK, CLUBS},
-		Card{SEVEN, CLUBS},
+		NewCard(EIGHT, SPADES),
+		NewCard(ACE, DIAMONDS),
+		NewCard(TREY, HEARTS),
+		NewCard(SIX, DIAMONDS),
+		NewCard(SIX, CLUBS),
+		NewCard(JACK, CLUBS),
+		NewCard(SEVEN, CLUBS),
 	}
 	cr := MakeCardRanking(d)
 	fmt.Printf("%v\n", cr)
@@ -813,29 +813,29 @@ func TestSampleHand000(t *testing.T) {
 
 func TestSampleGame001(t *testing.T) {
 	PlayerOneHole := Deck{
-		Card{JACK, SPADES},
-		Card{JACK, CLUBS},
+		NewCard(JACK, SPADES),
+		NewCard(JACK, CLUBS),
 	}
 	// FullHouse, Jack over Queen,
 
 	PlayerTwoHole := Deck{
-		Card{ACE, SPADES},
-		Card{ACE, HEARTS},
+		NewCard(ACE, SPADES),
+		NewCard(ACE, HEARTS),
 	}
 	// Two pairs, Aces, Queens, with JACK High
 
 	PlayerThreeHole := Deck{
-		Card{KING, DIAMONDS},
-		Card{ACE, DIAMONDS},
+		NewCard(KING, DIAMONDS),
+		NewCard(ACE, DIAMONDS),
 	}
 	// A pair , with Ace King, Jack High
 
 	board := Deck{
-		Card{JACK, DIAMONDS},
-		Card{TREY, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{DUCE, CLUBS},
+		NewCard(JACK, DIAMONDS),
+		NewCard(TREY, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(DUCE, CLUBS),
 	}
 	sd := MakeShowDown(board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
 	fmt.Printf("%+v\n", sd)
@@ -847,26 +847,26 @@ func TestSampleGame001(t *testing.T) {
 
 func TestSampleGame002(t *testing.T) {
 	PlayerOneHole := Deck{
-		Card{SIX, SPADES},
-		Card{SIX, CLUBS},
+		NewCard(SIX, SPADES),
+		NewCard(SIX, CLUBS),
 	}
 
 	PlayerTwoHole := Deck{
-		Card{FIVE, SPADES},
-		Card{FIVE, HEARTS},
+		NewCard(FIVE, SPADES),
+		NewCard(FIVE, HEARTS),
 	}
 
 	PlayerThreeHole := Deck{
-		Card{KING, DIAMONDS},
-		Card{NINE, DIAMONDS},
+		NewCard(KING, DIAMONDS),
+		NewCard(NINE, DIAMONDS),
 	}
 
 	board := Deck{
-		Card{TEN, DIAMONDS},
-		Card{TEN, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{ACE, CLUBS},
+		NewCard(TEN, DIAMONDS),
+		NewCard(TEN, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(ACE, CLUBS),
 	}
 	sd := MakeShowDown(board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
 	fmt.Printf("%+v\n", sd)
@@ -878,26 +878,26 @@ func TestSampleGame002(t *testing.T) {
 
 func TestSampleGame003(t *testing.T) {
 	PlayerOneHole := Deck{
-		Card{SIX, SPADES},
-		Card{SIX, CLUBS},
+		NewCard(SIX, SPADES),
+		NewCard(SIX, CLUBS),
 	}
 
 	PlayerTwoHole := Deck{
-		Card{ACE, SPADES},
-		Card{SEVEN, HEARTS},
+		NewCard(ACE, SPADES),
+		NewCard(SEVEN, HEARTS),
 	}
 
 	PlayerThreeHole := Deck{
-		Card{ACE, DIAMONDS},
-		Card{NINE, DIAMONDS},
+		NewCard(ACE, DIAMONDS),
+		NewCard(NINE, DIAMONDS),
 	}
 
 	board := Deck{
-		Card{TEN, DIAMONDS},
-		Card{TEN, SPADES},
-		Card{QUEEN, CLUBS},
-		Card{QUEEN, DIAMONDS},
-		Card{DUCE, CLUBS},
+		NewCard(TEN, DIAMONDS),
+		NewCard(TEN, SPADES),
+		NewCard(QUEEN, CLUBS),
+		NewCard(QUEEN, DIAMONDS),
+		NewCard(DUCE, CLUBS),
 	}
 	sd := MakeShowDown(board, PlayerOneHole, PlayerTwoHole, PlayerThreeHole)
 	fmt.Printf("%+v\n", sd)

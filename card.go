@@ -64,31 +64,32 @@ func (r Rank) String() string {
 	return fmt.Sprintf("%c", ranks[r])
 }
 
-type Card struct {
-	R Rank
-	S Suit
+type Card int
+
+func NewCard(r Rank, s Suit) Card {
+	return Card(int(s)*13 + int(r) - 1)
+}
+
+func (c Card) Rank() Rank {
+	return Rank(c%13) + 1
+}
+
+func (c Card) Suit() Suit {
+	return Suit(c / 13)
 }
 
 func (c Card) String() string {
-	return fmt.Sprintf("%v%v", c.R, c.S)
+	return fmt.Sprintf("%s%s", c.Rank(), c.Suit())
 }
 
 func (c Card) Ord() int {
-	//2 <= x <=53
-	x := 0
-	switch c.R {
-	case ACE:
-		x += 14
-	default:
-		x += int(c.R)
-	}
-	return x + int(c.S)*int(KING)
+	return int(c)
 }
 
 func parse(s string) Card {
 	i := strings.Index(ranks, s[0:1])
 	j := strings.Index("cdhs", s[1:2])
-	return Card{Rank(i), Suit(j)}
+	return NewCard(Rank(i), Suit(j))
 }
 
 func SuitPermZero() [][]Suit {

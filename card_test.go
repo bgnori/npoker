@@ -42,14 +42,14 @@ func TestRanks(t *testing.T) {
 }
 
 func cardhelper(t *testing.T, expected string, to_string Card) {
-	if expected != fmt.Sprintf("%v", to_string) {
-		t.Errorf("'%s' is expected for %d", expected, to_string)
+	if expected != fmt.Sprintf("%s", to_string) {
+		t.Errorf("'%s' is expected for %v but got %s", expected, to_string, fmt.Sprintf("%s", to_string))
 	}
 }
 
 func TestCards(t *testing.T) {
-	cardhelper(t, "A\u2665", Card{ACE, HEARTS})
-	cardhelper(t, "4\u2666", Card{FOUR, DIAMONDS})
+	cardhelper(t, "A\u2665", NewCard(ACE, HEARTS))
+	cardhelper(t, "4\u2666", NewCard(FOUR, DIAMONDS))
 }
 
 func SmokeParseWith(input string) {
@@ -64,21 +64,21 @@ func parsehelper(t *testing.T, expected Card, input string) {
 }
 
 func TestParse(t *testing.T) {
-	parsehelper(t, Card{ACE, HEARTS}, "Ah")
-	parsehelper(t, Card{FIVE, CLUBS}, "5c")
+	parsehelper(t, NewCard(ACE, HEARTS), "Ah")
+	parsehelper(t, NewCard(FIVE, CLUBS), "5c")
 }
 
 func cardordhelper(t *testing.T, expected int, to_string Card) {
 	if expected != to_string.Ord() {
-		t.Errorf("'%s' is expected for %d, but got %d.", expected, to_string, to_string.Ord())
+		t.Errorf("'%d' is expected for %v, but got %d.", expected, to_string, to_string.Ord())
 	}
 }
 
 func TestOrd(t *testing.T) {
-	cardordhelper(t, 14, Card{ACE, CLUBS})
-	cardordhelper(t, 13, Card{KING, CLUBS})
-	cardordhelper(t, 2, Card{DUCE, CLUBS})
-	cardordhelper(t, 53, Card{ACE, SPADES})
-	cardordhelper(t, 52, Card{KING, SPADES})
-	cardordhelper(t, 41, Card{DUCE, SPADES})
+	cardordhelper(t, 0, NewCard(ACE, CLUBS))
+	cardordhelper(t, 12, NewCard(KING, CLUBS))
+	cardordhelper(t, 1, NewCard(DUCE, CLUBS))
+	cardordhelper(t, 39, NewCard(ACE, SPADES))
+	cardordhelper(t, 51, NewCard(KING, SPADES))
+	cardordhelper(t, 40, NewCard(DUCE, SPADES))
 }

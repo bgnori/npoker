@@ -96,7 +96,7 @@ func (base *pokerHandBase) Selected() []Index {
 	return base.which
 }
 func (base *pokerHandBase) GetR(i int) Rank {
-	r := base.xs[base.which[i]].R
+	r := base.xs[base.which[i]].Rank()
 	if r == ACE {
 		return HIACE
 	}
@@ -225,7 +225,7 @@ func (cr *CardRanking) findThreeOfKind() (bool, PokerHand) {
 		for _, p := range px {
 			q := make([]Index, 5)
 			copy(q, p[0:3])
-			cr.fillWithHighCards(q, 3, cr.xs[q[0]].R)
+			cr.fillWithHighCards(q, 3, cr.xs[q[0]].Rank())
 			return true, &threeOfKind{
 				pokerHandBase{
 					phr:   ThreeOfAKind,
@@ -333,7 +333,7 @@ func (cr *CardRanking) findFourOfKind() (bool, PokerHand) {
 		for _, p := range px {
 			q := make([]Index, 5)
 			copy(q, p[0:4])
-			cr.fillWithHighCards(q, 4, cr.xs[q[0]].R)
+			cr.fillWithHighCards(q, 4, cr.xs[q[0]].Rank())
 			return true, &fourOfKind{
 				pokerHandBase{
 					phr:   FourOfAKind,
@@ -387,9 +387,9 @@ func prepareCardRanking(d Deck) CardRanking {
 		}
 	}
 	for i, x := range d {
-		cr.cards[x.R][x.S] = Index(i)
-		if x.R == ACE {
-			cr.cards[HIACE][x.S] = Index(i)
+		cr.cards[x.Rank()][x.Suit()] = Index(i)
+		if x.Rank() == ACE {
+			cr.cards[HIACE][x.Suit()] = Index(i)
 		}
 	}
 	return cr
@@ -408,7 +408,7 @@ func (cr *CardRanking) isSameRankWithLastItem(r Rank, xs []Index) bool {
 	if n == 0 {
 		return false
 	}
-	return cr.xs[xs[n-1]].R == r || (cr.xs[xs[n-1]].R == ACE && r == HIACE)
+	return cr.xs[xs[n-1]].Rank() == r || (cr.xs[xs[n-1]].Rank() == ACE && r == HIACE)
 }
 
 func (cr *CardRanking) calcPairwise() {
@@ -660,7 +660,7 @@ func (cr CardRanking) String() string {
 
 func (cr *CardRanking) isBanned(h Index, bann []Rank) bool {
 	for _, r := range bann {
-		if cr.xs[h].R == r || (cr.xs[h].R == ACE && r == HIACE) {
+		if cr.xs[h].Rank() == r || (cr.xs[h].Rank() == ACE && r == HIACE) {
 			return true
 		}
 	}
