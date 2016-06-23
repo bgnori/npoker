@@ -12,13 +12,17 @@ type EqCalc struct {
 	players []Deck
 }
 
-func NewEqCalc(board Deck, players []Deck) Runnable {
+func NewEqCalc(board []Deck, players []Deck) Runnable {
 	xs := BuildFullDeck()
-	xs.Subtract(board)
+	b := Deck{}
+	for _, street := range board {
+		xs.Subtract(street)
+		b = Join(b, street)
+	}
 	for _, p := range players {
 		xs.Subtract(p)
 	}
-	return &EqCalc{*xs, board, players}
+	return &EqCalc{*xs, b, players}
 }
 
 func (x *EqCalc) Clone() Runnable {
@@ -39,18 +43,18 @@ func (x *EqCalc) Run(source rand.Source) Result {
 
 type EqSummarizer struct {
 	calc  *EqCalc
-	count int
-	wins  []int
-	eqs   []int
+	Count int
+	Wins  []int
+	Eqs   []int
 }
 
 func NewEqSummarizer(r Runnable) Summarizer {
 	c := r.(*EqCalc)
 	return &EqSummarizer{
 		calc:  c,
-		count: 0,
-		wins:  make([]int, len(c.players)),
-		eqs:   make([]int, len(c.players)),
+		Count: 0,
+		Wins:  make([]int, len(c.players)),
+		Eqs:   make([]int, len(c.players)),
 	}
 }
 
@@ -60,10 +64,10 @@ func (x *EqSummarizer) Zero() Summary {
 
 func (x *EqSummarizer) String() string {
 	var xs []string
-	xs = append(xs, fmt.Sprintf(" %d players, %d trials", len(x.calc.players), x.count))
+	xs = append(xs, fmt.Sprintf(" %d players, %d trials", len(x.calc.players), x.Count))
 	for i, v := range x.calc.players {
 		s := fmt.Sprintf("player %d has %s, won %.3f, won eq of %.2f.",
-			i, v, float64(x.wins[i])/float64(x.count), float64(x.eqs[i])/float64(x.count))
+			i, v, float64(x.Wins[i])/float64(x.Count), float64(x.Eqs[i])/float64(x.Count))
 		xs = append(xs, s)
 	}
 
@@ -74,12 +78,12 @@ func (x *EqSummarizer) Fold(s Summary, result Result) Summary {
 	sd := result.(*ShowDown)
 	summary := s.(*EqSummarizer)
 	for _, idx := range sd.Winners {
-		summary.wins[idx] += 1
+		summary.Wins[idx] += 1
 	}
 	xs := DistrubuteChips(1000, 1, 0, sd)
 	for i, v := range xs {
-		summary.eqs[i] += v
+		summary.Eqs[i] += v
 	}
-	summary.count += 1
+	summary.Count += 1
 	return summary
 }

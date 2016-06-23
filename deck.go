@@ -1,6 +1,7 @@
 package npoker
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -16,6 +17,41 @@ const (
 
 func (d *Deck) Append(c Card) {
 	*d = append([]Card(*d), c)
+}
+
+const (
+	expectRank = iota
+	expectSuit
+	pushCard
+)
+
+func (d *Deck) UnmarshalJSON(b []byte) (err error) {
+	var source string
+	if err = json.Unmarshal(b, &source); err != nil {
+		return
+	}
+	var r Rank
+	var s Suit
+	state := expectRank
+	for _, rV := range source {
+		//fmt.Printf("[%#U, %d], ", rV, idx)
+		switch state {
+		case expectRank:
+			r, err = MatchRank(rV)
+			state = expectSuit
+		case expectSuit:
+			s, err = MatchSuit(rV)
+			state = pushCard
+		}
+		if err != nil {
+			return
+		}
+		if state == pushCard {
+			*d = append([]Card(*d), NewCard(r, s))
+			state = expectRank
+		}
+	}
+	return
 }
 
 func (d Deck) String() string {

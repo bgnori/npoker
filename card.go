@@ -1,6 +1,7 @@
 package npoker
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -84,6 +85,22 @@ func (c Card) String() string {
 
 func (c Card) Ord() int {
 	return int(c)
+}
+
+func MatchRank(r rune) (Rank, error) {
+	var found int
+	if found = strings.IndexRune(ranks, r); found == -1 {
+		return RANKS, errors.New(fmt.Sprintf("no such rune found: %#U", r))
+	}
+	return Rank(found), nil
+}
+
+func MatchSuit(r rune) (Suit, error) {
+	var found int
+	if found = strings.IndexRune("cdhs", r); found == -1 {
+		return SUITS, errors.New(fmt.Sprintf("no such rune found: %#U", r))
+	}
+	return Suit(found), nil
 }
 
 func parse(s string) Card {
