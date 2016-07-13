@@ -2,7 +2,6 @@ package npoker
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 )
 
@@ -12,7 +11,19 @@ type EqCalc struct {
 	players []Deck
 }
 
-func NewEqCalc(board []Deck, players []Deck) Runnable {
+type Result interface {
+	String() string
+}
+
+type Summary interface {
+	String() string
+}
+
+type Summarizer interface {
+	String() string
+}
+
+func NewEqCalc(board []Deck, players []Deck) *EqCalc {
 	xs := BuildFullDeck()
 	b := Deck{}
 	for _, street := range board {
@@ -25,7 +36,7 @@ func NewEqCalc(board []Deck, players []Deck) Runnable {
 	return &EqCalc{*xs, b, players}
 }
 
-func (x *EqCalc) Clone() Runnable {
+func (x *EqCalc) Clone() *EqCalc {
 	return &EqCalc{
 		x.xs.Clone(),
 		x.board.Clone(),
@@ -33,8 +44,7 @@ func (x *EqCalc) Clone() Runnable {
 	}
 }
 
-func (x *EqCalc) Run(source rand.Source) Result {
-	r := rand.New(source)
+func (x *EqCalc) Run(r *Rand) Result {
 	x.xs.Shuffle(r)
 	x.xs.ShrinkTo(5 - len(x.board))
 	river := Join(x.board, x.xs)
@@ -48,8 +58,7 @@ type EqSummarizer struct {
 	Eqs   []int
 }
 
-func NewEqSummarizer(r Runnable) Summarizer {
-	c := r.(*EqCalc)
+func NewEqSummarizer(c *EqCalc) Summarizer {
 	return &EqSummarizer{
 		calc:  c,
 		Count: 0,

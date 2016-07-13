@@ -3,7 +3,6 @@ package npoker
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"strings"
 )
 
@@ -65,7 +64,7 @@ func (d *Deck) Length() int {
 	return len([]Card(*d))
 }
 
-func (d *Deck) Shuffle(r *rand.Rand) {
+func (d *Deck) Shuffle(r *Rand) {
 	n := d.Length()
 	xs := []Card(*d)
 	for i := n - 1; i >= 0; i-- {

@@ -2,7 +2,6 @@ package npoker
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 )
 
@@ -48,7 +47,8 @@ func TestShuffle(t *testing.T) {
 	if d.Length() != 52 {
 		t.Errorf("full length is expected to be 52.")
 	}
-	r := rand.New(rand.NewSource(0))
+	r := NewRand()
+	r.SeedFromBytes(GetSeedFromURAND())
 	d.Shuffle(r)
 	if d.Length() != 52 {
 		t.Errorf("full length is expected to be 52.")
