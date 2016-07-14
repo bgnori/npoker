@@ -71,3 +71,14 @@ func TestCloneDeck(t *testing.T) {
 		t.Errorf("length is expected to be 52, but got %d", xs.Length())
 	}
 }
+
+func BenchmarkShuffle(b *testing.B) {
+	d := BuildFullDeck()
+	r := NewRand()
+	r.SeedFromBytes(GetSeedFromURAND())
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		d.Shuffle(r)
+	}
+
+}
