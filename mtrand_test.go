@@ -5,17 +5,29 @@ import (
 	"testing"
 )
 
-func TestLoadSeed(t *testing.T) {
+func TestLoadSeedURand(t *testing.T) {
 	b := GetSeedFromURAND()
 	r := NewRand()
 	r.SeedFromBytes(b)
 	fmt.Println(r.Int63())
+}
 
+func TestLoadSeedRand(t *testing.T) {
+	b := GetSeedFromRAND()
+	r := NewRand()
+	r.SeedFromBytes(b)
+	fmt.Println(r.Int63())
 }
 
 func BenchmarkGetSeedFromURAND(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		GetSeedFromURAND()
+	}
+}
+
+func BenchmarkGetSeedFromRAND(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		GetSeedFromRAND()
 	}
 }
 

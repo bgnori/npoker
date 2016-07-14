@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
-	//"fmt"
 	"github.com/seehuhn/mt19937"
+	"os"
 )
 
 const (
@@ -59,6 +59,23 @@ func GetSeedFromURAND() []byte {
 	_, err := rand.Reader.Read(b)
 	if err != nil {
 		panic(err)
+	}
+	return b
+}
+
+func GetSeedFromRAND() []byte {
+	b := make([]byte, NByte)
+	f, err := os.Open("/dev/random")
+	defer f.Close()
+	if err != nil {
+		panic(err)
+	}
+	for i := 0; i < NByte; {
+		n, err := f.Read(b)
+		if err != nil {
+			panic(err)
+		}
+		i += n
 	}
 	return b
 }
