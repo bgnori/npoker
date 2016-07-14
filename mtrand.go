@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"github.com/seehuhn/mt19937"
 	"os"
+	"time"
 )
 
 const (
@@ -71,9 +72,13 @@ func GetSeedFromRAND() []byte {
 		panic(err)
 	}
 	for i := 0; i < NByte; {
-		n, err := f.Read(b)
+		n, err := f.Read(b[i:])
 		if err != nil {
 			panic(err)
+		}
+		if n == 0 {
+			time.Sleep(100 * time.Millisecond)
+
 		}
 		i += n
 	}
