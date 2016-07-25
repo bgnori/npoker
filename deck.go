@@ -33,7 +33,6 @@ func (d *Deck) UnmarshalJSON(b []byte) (err error) {
 	var s Suit
 	state := expectRank
 	for _, rV := range source {
-		//fmt.Printf("[%#U, %d], ", rV, idx)
 		switch state {
 		case expectRank:
 			r, err = MatchRank(rV)
@@ -51,6 +50,16 @@ func (d *Deck) UnmarshalJSON(b []byte) (err error) {
 		}
 	}
 	return
+}
+
+func (d *Deck) MarshalJSON() ([]byte, error) {
+	var b []byte
+	b = append(b, '"')
+	for _, c := range ([]Card)(*d) {
+		b = append(b, Card(c).String()...)
+	}
+	b = append(b, '"')
+	return b, nil
 }
 
 func (d Deck) String() string {

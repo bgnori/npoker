@@ -4,6 +4,7 @@ import (
 	//"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Request struct {
@@ -23,10 +24,13 @@ type WorkSet struct {
 }
 
 type Summary struct {
-	players []Deck
-	Count   int
-	Wins    []int
-	Eqs     []int
+	Req   Request `json:"request"`
+	Seed  []byte  `json:"seed"`
+	Count int     `json:"count"`
+	Wins  []int   `json:"win"`
+	Eqs   []int   `json:"eqs"`
+	Start time.Time
+	End   time.Time
 }
 
 func NewWorkSet(board []Deck, players []Deck) *WorkSet {
@@ -57,12 +61,13 @@ func (x *WorkSet) Run(r *Rand) *ShowDown {
 	return MakeShowDown(river, x.players...)
 }
 
-func NewSummary(players []Deck) *Summary {
+func NewSummary(req Request, b []byte) *Summary {
 	return &Summary{
-		players: players,
-		Count:   0,
-		Wins:    make([]int, len(players)),
-		Eqs:     make([]int, len(players)),
+		Seed:  b,
+		Req:   req,
+		Count: 0,
+		Wins:  make([]int, len(req.Players)),
+		Eqs:   make([]int, len(req.Players)),
 	}
 }
 
@@ -80,8 +85,8 @@ func (summary *Summary) Add(sd *ShowDown) *Summary {
 
 func (summary *Summary) String() string {
 	var xs []string
-	xs = append(xs, fmt.Sprintf(" %d players, %d trials", len(summary.players), summary.Count))
-	for i, v := range summary.players {
+	xs = append(xs, fmt.Sprintf(" %d players, %d trials", len(summary.Req.Players), summary.Count))
+	for i, v := range summary.Req.Players {
 		s := fmt.Sprintf("player %d has %s, won %.3f, won eq of %.2f.",
 			i, v, float64(summary.Wins[i])/float64(summary.Count), float64(summary.Eqs[i])/float64(summary.Count))
 		xs = append(xs, s)

@@ -27,15 +27,11 @@ const (
 
 //Clubs
 //U+2663 //&clubs;
-var suits = [...]string{
-	"\u2663",
-	"\u2666",
-	"\u2665",
-	"\u2660",
-}
+
+var suits = []rune{'\u2663', '\u2666', '\u2665', '\u2660'}
 
 func (s Suit) String() string {
-	return suits[s]
+	return fmt.Sprintf("%c", suits[s])
 }
 
 type Rank int
@@ -96,11 +92,13 @@ func MatchRank(r rune) (Rank, error) {
 }
 
 func MatchSuit(r rune) (Suit, error) {
-	var found int
-	if found = strings.IndexRune("cdhs", r); found == -1 {
-		return SUITS, errors.New(fmt.Sprintf("no such rune found: %#U", r))
+	if found := strings.IndexRune("cdhs", r); 0 <= found && found < 4 {
+		return Suit(found), nil
 	}
-	return Suit(found), nil
+	if found := strings.IndexRune(string(suits), r); 0 <= found && found < 4 {
+		return Suit(found), nil
+	}
+	return SUITS, errors.New(fmt.Sprintf("no such rune found: %#U", r))
 }
 
 func parse(s string) Card {
