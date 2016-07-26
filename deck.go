@@ -68,8 +68,9 @@ func (d Deck) String() string {
 	for _, c := range []Card(d) {
 		xs = append(xs, fmt.Sprintf("%v%v", c.Rank(), c.Suit()))
 	}
-	return strings.Join(xs, ",")
+	return strings.Join(xs, "")
 }
+
 func (d *Deck) Length() int {
 	return len([]Card(*d))
 }

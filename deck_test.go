@@ -6,7 +6,7 @@ import (
 )
 
 func TestDeckString(t *testing.T) {
-	expected := "As,4h"
+	expected := "As4h"
 	d := Deck{NewCard(ACE, SPADES), NewCard(FOUR, HEARTS)}
 	got := fmt.Sprintf("%v", d)
 	if expected != got {
@@ -54,7 +54,7 @@ func TestJoinDeck(t *testing.T) {
 	if f.Length() != 4 {
 		t.Errorf("expected is 4.")
 	}
-	expected := "As,Ac,Kh,Kd"
+	expected := "AsAcKhKd"
 	got := fmt.Sprintf("%s", f)
 
 	if expected != got {
