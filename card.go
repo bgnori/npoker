@@ -16,7 +16,8 @@ const (
 	SUITS
 )
 
-var ascii_suits = "cdhs"
+const ascii_suits = "cdhs"
+
 var unicode_suits = []rune{'\u2663', '\u2666', '\u2665', '\u2660'}
 var unicode_suit_map = map[rune]Suit{
 	// Spades
@@ -30,11 +31,18 @@ var unicode_suit_map = map[rune]Suit{
 }
 
 func (s Suit) String() string {
-	return fmt.Sprintf("%c", ascii_suits[s])
+	if CLUBS <= s && s < SUITS {
+		return fmt.Sprintf("%c", ascii_suits[s])
+	}
+	panic(fmt.Sprintf("no such suit found: %d", s))
 }
 
 func (s Suit) MarshalJSON() ([]byte, error) {
-	return []byte(string(unicode_suits[s])), nil
+	if CLUBS <= s && s < SUITS {
+		return []byte(string([]rune{unicode_suits[s]})), nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("no such suit found: %d", s))
+	}
 }
 
 type Rank int
