@@ -5,17 +5,34 @@ import (
 	"testing"
 )
 
+func suitjsonhelper(t *testing.T, expected string, to_json Suit) {
+	j, err := to_json.MarshalJSON()
+	if err != nil {
+		t.Errorf("'%s' is expected for %d got error, %v", expected, to_json, err)
+	}
+	if expected != string(j) {
+		t.Errorf("'%s' is expected for %d", expected, to_json)
+	}
+}
+
+func TestSuitsMarshallJson(t *testing.T) {
+	suitjsonhelper(t, "\u2660", SPADES)
+	suitjsonhelper(t, "\u2665", HEARTS)
+	suitjsonhelper(t, "\u2666", DIAMONDS)
+	suitjsonhelper(t, "\u2663", CLUBS)
+}
+
 func suithelper(t *testing.T, expected string, to_string Suit) {
 	if expected != fmt.Sprintf("%v", to_string) {
 		t.Errorf("'%s' is expected for %d", expected, to_string)
 	}
 }
 
-func TestSuits(t *testing.T) {
-	suithelper(t, "\u2660", SPADES)
-	suithelper(t, "\u2665", HEARTS)
-	suithelper(t, "\u2666", DIAMONDS)
-	suithelper(t, "\u2663", CLUBS)
+func TestSuitsAscii(t *testing.T) {
+	suithelper(t, "s", SPADES)
+	suithelper(t, "h", HEARTS)
+	suithelper(t, "d", DIAMONDS)
+	suithelper(t, "c", CLUBS)
 }
 
 func rankhelper(t *testing.T, expected string, to_string Rank) {
@@ -41,15 +58,31 @@ func TestRanks(t *testing.T) {
 	rankhelper(t, "A", HIACE)
 }
 
+func cardjsonhelper(t *testing.T, expected string, to_json Card) {
+	j, err := to_json.MarshalJSON()
+	if err != nil {
+		t.Errorf("'%s' is expected for %d got error, %v", expected, to_json, err)
+	}
+	if expected != string(j) {
+		t.Errorf("'%s' is expected for %v but got %s", expected, to_json, string(j))
+	}
+}
+
+func TestJsonCards(t *testing.T) {
+	cardjsonhelper(t, "A\u2665", NewCard(ACE, HEARTS))
+	cardjsonhelper(t, "4\u2666", NewCard(FOUR, DIAMONDS))
+}
+
 func cardhelper(t *testing.T, expected string, to_string Card) {
-	if expected != fmt.Sprintf("%s", to_string) {
-		t.Errorf("'%s' is expected for %v but got %s", expected, to_string, fmt.Sprintf("%s", to_string))
+	got := fmt.Sprintf("%s", to_string)
+	if expected != got {
+		t.Errorf("'%s' is expected for %+v but got %s", expected, to_string, got)
 	}
 }
 
 func TestCards(t *testing.T) {
-	cardhelper(t, "A\u2665", NewCard(ACE, HEARTS))
-	cardhelper(t, "4\u2666", NewCard(FOUR, DIAMONDS))
+	cardhelper(t, "Ah", NewCard(ACE, HEARTS))
+	cardhelper(t, "4d", NewCard(FOUR, DIAMONDS))
 }
 
 func SmokeParseWith(input string) {

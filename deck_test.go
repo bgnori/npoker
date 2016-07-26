@@ -5,15 +5,25 @@ import (
 	"testing"
 )
 
-func deckhelper(t *testing.T, expected string, to_string Deck) {
-	if expected != fmt.Sprintf("%v", to_string) {
-		t.Errorf("'%s' is expected for %d, but got %v", expected, to_string, to_string)
+func TestDeckString(t *testing.T) {
+	expected := "As,4h"
+	d := Deck{NewCard(ACE, SPADES), NewCard(FOUR, HEARTS)}
+	got := fmt.Sprintf("%v", d)
+	if expected != got {
+		t.Errorf("'%s' is expected for %d, but got %v", expected, d, got)
 	}
 }
 
-func TestDeckString(t *testing.T) {
+func TestDeckJSON(t *testing.T) {
 	d := Deck{NewCard(ACE, SPADES), NewCard(FOUR, HEARTS)}
-	deckhelper(t, "A\u2660,4\u2665", d)
+	expected := "\"A\u26604\u2665\""
+	j, err := d.MarshalJSON()
+	if err != nil {
+		t.Errorf("'%s' is expected for %d, but error! %v", expected, d, err)
+	}
+	if expected != string(j) {
+		t.Errorf("'%s' is expected for %d, but got %v", expected, d, j)
+	}
 }
 
 func TestFullDeck(t *testing.T) {
@@ -29,7 +39,12 @@ func TestDropDeck(t *testing.T) {
 	if d.Length() != 1 {
 		t.Errorf("expected is 1.")
 	}
-	deckhelper(t, "A\u2663", d)
+	expected := "Ac"
+	got := fmt.Sprintf("%s", d)
+
+	if expected != got {
+		t.Errorf("'%s' is expected for %d, but got %v", expected, d, got)
+	}
 }
 
 func TestJoinDeck(t *testing.T) {
@@ -39,7 +54,13 @@ func TestJoinDeck(t *testing.T) {
 	if f.Length() != 4 {
 		t.Errorf("expected is 4.")
 	}
-	deckhelper(t, "A\u2660,A\u2663,K\u2665,K\u2666", f)
+	expected := "As,Ac,Kh,Kd"
+	got := fmt.Sprintf("%s", f)
+
+	if expected != got {
+		t.Errorf("'%s' is expected for %d, but got %v", expected, f, got)
+	}
+
 }
 
 func TestShuffle(t *testing.T) {

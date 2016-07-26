@@ -56,7 +56,8 @@ func (d *Deck) MarshalJSON() ([]byte, error) {
 	var b []byte
 	b = append(b, '"')
 	for _, c := range ([]Card)(*d) {
-		b = append(b, Card(c).String()...)
+		x, _ := Card(c).MarshalJSON()
+		b = append(b, x...)
 	}
 	b = append(b, '"')
 	return b, nil

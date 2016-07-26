@@ -16,22 +16,25 @@ const (
 	SUITS
 )
 
-// Spades
-//U+2660 //&spades;
-
-//Hearts
-//U+2665 //&hearts
-
-//Diamonds
-//U+2666 //&diams;
-
-//Clubs
-//U+2663 //&clubs;
-
-var suits = []rune{'\u2663', '\u2666', '\u2665', '\u2660'}
+var ascii_suits = "cdhs"
+var unicode_suits = []rune{'\u2663', '\u2666', '\u2665', '\u2660'}
+var unicode_suit_map = map[rune]Suit{
+	// Spades
+	'\u2660': SPADES, // &spades;
+	//Hearts
+	'\u2665': HEARTS, // &hearts;
+	//Diamonds
+	'\u2666': DIAMONDS, //&diams;
+	//Clubs
+	'\u2663': CLUBS, //&clubs;
+}
 
 func (s Suit) String() string {
-	return fmt.Sprintf("%c", suits[s])
+	return fmt.Sprintf("%c", ascii_suits[s])
+}
+
+func (s Suit) MarshalJSON() ([]byte, error) {
+	return []byte(string(unicode_suits[s])), nil
 }
 
 type Rank int
@@ -61,6 +64,10 @@ func (r Rank) String() string {
 	return fmt.Sprintf("%c", ranks[r])
 }
 
+func (r Rank) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("%c", ranks[r])), nil
+}
+
 type Card int
 
 func NewCard(r Rank, s Suit) Card {
@@ -73,6 +80,19 @@ func (c Card) Rank() Rank {
 
 func (c Card) Suit() Suit {
 	return Suit(c / 13)
+}
+
+func (c Card) MarshalJSON() ([]byte, error) {
+	var err error
+	var r []byte
+	var s []byte
+	if r, err = c.Rank().MarshalJSON(); err != nil {
+		return nil, err
+	}
+	if s, err = c.Suit().MarshalJSON(); err != nil {
+		return nil, err
+	}
+	return append(r, s...), nil
 }
 
 func (c Card) String() string {
@@ -92,10 +112,10 @@ func MatchRank(r rune) (Rank, error) {
 }
 
 func MatchSuit(r rune) (Suit, error) {
-	if found := strings.IndexRune("cdhs", r); 0 <= found && found < 4 {
+	if found := strings.IndexRune(ascii_suits, r); 0 <= found && found < 4 {
 		return Suit(found), nil
 	}
-	if found := strings.IndexRune(string(suits), r); 0 <= found && found < 4 {
+	if found, ok := unicode_suit_map[r]; ok && 0 <= found && found < 4 {
 		return Suit(found), nil
 	}
 	return SUITS, errors.New(fmt.Sprintf("no such rune found: %#U", r))
