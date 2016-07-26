@@ -12,6 +12,7 @@ type Request struct {
 	Players []Deck `json:"players"`
 	Board   []Deck `json:"board"`
 	Trials  int    `json:"trials"`
+	Seed    []byte `json:"seed"`
 }
 
 type Response struct {
@@ -25,7 +26,6 @@ type WorkSet struct {
 
 type Summary struct {
 	Req   Request `json:"request"`
-	Seed  []byte  `json:"seed"`
 	Count int     `json:"count"`
 	Wins  []int   `json:"win"`
 	Eqs   []int   `json:"eqs"`
@@ -61,9 +61,8 @@ func (x *WorkSet) Run(r *Rand) *ShowDown {
 	return MakeShowDown(river, x.players...)
 }
 
-func NewSummary(req Request, b []byte) *Summary {
+func NewSummary(req Request) *Summary {
 	return &Summary{
-		Seed:  b,
 		Req:   req,
 		Count: 0,
 		Wins:  make([]int, len(req.Players)),

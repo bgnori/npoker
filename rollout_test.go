@@ -35,14 +35,14 @@ func BenchmarkRollOut(b *testing.B) {
 		Source:  "rollout test",
 		Players: []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole},
 		Board:   board,
+		Seed:    GetSeedFromRAND(),
 		Trials:  1,
 	}
 	w := NewWorkSet(req.Board, req.Players)
-	seed := GetSeedFromRAND()
-	summary := NewSummary(req, seed)
+	summary := NewSummary(req)
 
 	r := NewRand()
-	r.SeedFromBytes(seed)
+	r.SeedFromBytes(req.Seed)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
