@@ -122,5 +122,81 @@ func (d *Deck) ShrinkTo(count int) {
 }
 
 func Join(d Deck, e Deck) Deck {
-	return Deck(append([]Card(d), []Card(e)...))
+	xs := make([]Card, 0, d.Length()+e.Length())
+	xs = append(xs, []Card(d)...)
+	xs = append(xs, []Card(e)...)
+	return xs
+}
+
+type Combinated struct {
+	Chosen Deck
+	Rest   Deck
+}
+
+func (d Deck) CombOne() chan Combinated {
+	ch := make(chan Combinated)
+	length := d.Length()
+	xs := []Card(d)
+	go func() {
+		defer close(ch)
+		for i := 0; i < length; i++ {
+			ys := make([]Card, 0, length-1)
+			ys = append(ys, xs[:i]...)
+			ys = append(ys, xs[i+1:]...)
+			ch <- Combinated{
+				Deck([]Card{xs[i]}),
+				Deck(ys),
+			}
+		}
+	}()
+	return ch
+}
+
+func (d Deck) CombTwo() chan Combinated {
+	ch := make(chan Combinated, 1)
+	length := d.Length()
+	xs := ([]Card)(d)
+	go func() {
+		defer close(ch)
+		for i := 0; i < length; i++ {
+			for j := i + 1; j < length; j++ {
+				ys := make([]Card, 0, length-2)
+				ys = append(ys, xs[:i]...)
+				ys = append(ys, xs[i+1:j]...)
+				ys = append(ys, xs[j+1:]...)
+
+				ch <- Combinated{
+					Deck([]Card{xs[i], xs[j]}),
+					Deck(ys),
+				}
+			}
+		}
+	}()
+	return ch
+}
+
+func (d Deck) CombThree() chan Combinated {
+	ch := make(chan Combinated)
+	length := d.Length()
+	xs := ([]Card)(d)
+	go func() {
+		defer close(ch)
+		for i := 0; i < length; i++ {
+			for j := i + 1; j < length; j++ {
+				for k := j + 1; k < length; k++ {
+					ys := make([]Card, 0, length-3)
+					ys = append(ys, xs[:i]...)
+					ys = append(ys, xs[i+1:j]...)
+					ys = append(ys, xs[j+1:k]...)
+					ys = append(ys, xs[k+1:]...)
+
+					ch <- Combinated{
+						Deck([]Card{d[i], d[j], d[k]}),
+						Deck(ys),
+					}
+				}
+			}
+		}
+	}()
+	return ch
 }

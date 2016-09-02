@@ -61,6 +61,22 @@ func (x *WorkSet) Run(r *Rand) *ShowDown {
 	return MakeShowDown(river, x.players...)
 }
 
+func (w *WorkSet) ByComb(summary *Summary) {
+	//assurme empty board
+	for flop := range w.xs.CombThree() {
+		for turn := range flop.Rest.CombOne() {
+			for river := range turn.Rest.CombOne() {
+				board := Deck{}
+				board = Join(board, flop.Chosen)
+				board = Join(board, turn.Chosen)
+				board = Join(board, river.Chosen)
+				fmt.Println(board)
+				summary.Add(MakeShowDown(board, w.players...))
+			}
+		}
+	}
+}
+
 func NewSummary(req Request) *Summary {
 	return &Summary{
 		Req:   req,

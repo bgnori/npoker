@@ -103,3 +103,72 @@ func BenchmarkShuffle(b *testing.B) {
 	}
 
 }
+
+func TestCombOne(t *testing.T) {
+	count := 0
+	xs := BuildFullDeck()
+	fmt.Println(xs)
+	for i, x := range []Card(*xs) {
+		fmt.Println(i, x)
+	}
+	for comb := range xs.CombOne() {
+		count += 1
+		fmt.Println(comb.Chosen)
+		if comb.Chosen.Length() != 1 {
+			t.Errorf("Chosen length is expected to be 1, but got %d,\n%s", comb.Chosen.Length(), comb.Chosen)
+		}
+		if comb.Rest.Length() != 51 {
+			t.Errorf("Rest length is expected to be 51, but got %d,\n%s", comb.Rest.Length(), comb.Rest)
+		}
+	}
+	if count != 52 {
+		t.Errorf("# of generations is expected to be 52.")
+	}
+}
+
+func TestCombTwo(t *testing.T) {
+	count := 0
+	xs := BuildFullDeck()
+
+	fmt.Println(xs)
+	for comb := range xs.CombTwo() {
+		count += 1
+		cards := []Card(comb.Chosen)
+		if cards[0] == cards[1] {
+			t.Errorf("found same Card in cards %s", cards)
+		}
+		fmt.Println(comb.Chosen)
+
+		if comb.Chosen.Length() != 2 {
+			t.Errorf("Chosen length is expected to be 2, but got %d", comb.Chosen.Length())
+		}
+		if comb.Rest.Length() != 50 {
+			t.Errorf("Rest length is expected to be 50, but got %d", comb.Rest.Length())
+		}
+	}
+	if count != 52*51/2 {
+		t.Errorf("# of generations is expected to be 52 * 51 /2 = %d, but got %d.", 52*51/2, count)
+	}
+}
+
+func TestCombThree(t *testing.T) {
+	count := 0
+	xs := BuildFullDeck()
+	for comb := range xs.CombThree() {
+		count += 1
+		flop := []Card(comb.Chosen)
+		if flop[0] == flop[1] || flop[1] == flop[2] || flop[0] == flop[2] {
+			t.Errorf("found same Card in flop %s", flop)
+		}
+
+		if comb.Chosen.Length() != 3 {
+			t.Errorf("Chosen length is expected to be 3, but got %d", comb.Chosen.Length())
+		}
+		if comb.Rest.Length() != 49 {
+			t.Errorf("Rest length is expected to be 49, but got %d", comb.Rest.Length())
+		}
+	}
+	if count != 52*51*50/(3*2*1) {
+		t.Errorf("# of generations is expected to be 52 * 51 *50/(3*2*1) = %d, but got %d.", 52*51*50/(3*2*1), count)
+	}
+}
