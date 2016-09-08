@@ -47,10 +47,10 @@ func TestDropDeck(t *testing.T) {
 	}
 }
 
-func TestJoinDeck(t *testing.T) {
+func TestMakeDeckFrom(t *testing.T) {
 	d := Deck{NewCard(ACE, SPADES), NewCard(ACE, CLUBS)}
 	e := Deck{NewCard(KING, HEARTS), NewCard(KING, DIAMONDS)}
-	f := Join(d, e)
+	f := MakeDeckFrom(d, e)
 	if f.Length() != 4 {
 		t.Errorf("expected is 4.")
 	}

@@ -38,7 +38,7 @@ func NewWorkSet(board []Deck, players []Deck) *WorkSet {
 	b := Deck{}
 	for _, street := range board {
 		xs.Subtract(street)
-		b = Join(b, street)
+		b = MakeDeckFrom(b, street)
 	}
 	for _, p := range players {
 		xs.Subtract(p)
@@ -57,7 +57,7 @@ func (x *WorkSet) Clone() *WorkSet {
 func (x *WorkSet) Run(r *Rand) *ShowDown {
 	x.xs.Shuffle(r)
 	x.xs.ShrinkTo(5 - len(x.board))
-	river := Join(x.board, x.xs)
+	river := MakeDeckFrom(x.board, x.xs)
 	return MakeShowDown(river, x.players...)
 }
 
@@ -66,10 +66,7 @@ func (w *WorkSet) ByComb(summary *Summary) {
 	for flop := range w.xs.CombThree() {
 		for turn := range flop.Rest.CombOne() {
 			for river := range turn.Rest.CombOne() {
-				board := Deck{}
-				board = Join(board, flop.Chosen)
-				board = Join(board, turn.Chosen)
-				board = Join(board, river.Chosen)
+				board := MakeDeckFrom(flop.Chosen, turn.Chosen, river.Chosen)
 				fmt.Println(board)
 				summary.Add(MakeShowDown(board, w.players...))
 			}

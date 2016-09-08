@@ -746,7 +746,7 @@ func MakeShowDown(board Deck, holes ...Deck) *ShowDown {
 	}
 
 	for i, h := range holes {
-		sd.PokerHands[i] = CalcHand(Join(h, board))
+		sd.PokerHands[i] = CalcHand(MakeDeckFrom(h, board))
 	}
 	var w PokerHand
 	w = makeNullHand()

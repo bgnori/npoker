@@ -121,11 +121,16 @@ func (d *Deck) ShrinkTo(count int) {
 	*d = []Card(*d)[0:count]
 }
 
-func Join(d Deck, e Deck) Deck {
-	xs := make([]Card, 0, d.Length()+e.Length())
-	xs = append(xs, []Card(d)...)
-	xs = append(xs, []Card(e)...)
-	return xs
+func MakeDeckFrom(xss ...Deck) Deck {
+	cap := 0
+	for _, xs := range xss {
+		cap += xs.Length()
+	}
+	ys := make([]Card, 0, cap)
+	for _, xs := range xss {
+		ys = append(ys, []Card(xs)...)
+	}
+	return ys
 }
 
 type Combinated struct {
