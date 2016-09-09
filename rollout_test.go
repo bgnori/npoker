@@ -50,3 +50,46 @@ func BenchmarkRollOut(b *testing.B) {
 		summary.Add(u.Run(r))
 	}
 }
+
+func BenchmarkByComb(b *testing.B) {
+	PlayerOneHole := Deck{
+		NewCard(NINE, DIAMONDS),
+		NewCard(SIX, DIAMONDS),
+	}
+
+	PlayerTwoHole := Deck{
+		NewCard(FIVE, CLUBS),
+		NewCard(FIVE, HEARTS),
+	}
+
+	PlayerThreeHole := Deck{
+		NewCard(JACK, CLUBS),
+		NewCard(EIGHT, CLUBS),
+	}
+	board := []Deck{
+		Deck{
+			NewCard(NINE, CLUBS),
+			NewCard(SEVEN, CLUBS),
+			NewCard(FIVE, DIAMONDS),
+		},
+		Deck{
+			NewCard(FOUR, DIAMONDS),
+		},
+	}
+
+	req := Request{
+		Source:  "Comb request",
+		Players: []Deck{PlayerOneHole, PlayerTwoHole, PlayerThreeHole},
+		Board:   board,
+		Seed:    GetSeedFromRAND(),
+		Trials:  1,
+	}
+	w := NewWorkSet(req.Board, req.Players)
+	summary := NewSummary(req)
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		u := w.Clone()
+		u.ByCombX(summary)
+	}
+}

@@ -61,13 +61,20 @@ func (x *WorkSet) Run(r *Rand) *ShowDown {
 	return MakeShowDown(river, x.players...)
 }
 
+func (w *WorkSet) ByCombX(summary *Summary) {
+	//assurme empty board
+	for river := range w.xs.CombOne() {
+		board := MakeDeckFrom(w.board, river.Chosen)
+		summary.Add(MakeShowDown(board, w.players...))
+	}
+}
+
 func (w *WorkSet) ByComb(summary *Summary) {
 	//assurme empty board
 	for flop := range w.xs.CombThree() {
 		for turn := range flop.Rest.CombOne() {
 			for river := range turn.Rest.CombOne() {
 				board := MakeDeckFrom(flop.Chosen, turn.Chosen, river.Chosen)
-				fmt.Println(board)
 				summary.Add(MakeShowDown(board, w.players...))
 			}
 		}
