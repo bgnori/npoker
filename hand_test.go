@@ -13,26 +13,26 @@ func TestFIFO5(t *testing.T) {
 	f.Push(4)
 	f.Push(5)
 	if len(f.xs) != 5 {
-		t.Error("f.xs should be {1, 2, 3, 4, 5}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {1, 2, 3, 4, 5}, but got %+v", f.xs)
 	}
 	f.Push(6)
 	if len(f.xs) != 5 {
-		t.Error("f.xs should be {1, 2, 3, 4, 5}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {1, 2, 3, 4, 5}, but got %+v", f.xs)
 	}
 	if f.xs[0] != 2 {
-		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
 	}
 	if f.xs[1] != 3 {
-		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
 	}
 	if f.xs[2] != 4 {
-		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
 	}
 	if f.xs[3] != 5 {
-		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
 	}
 	if f.xs[4] != 6 {
-		t.Error("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
+		t.Errorf("f.xs should be {2, 3, 4, 5, 6}, but got %+v", f.xs)
 	}
 }
 
@@ -152,13 +152,13 @@ func TestCalcStraightDeck001(t *testing.T) {
 		t.Errorf("should be 15 entries, but %d with %+v", len(cr.straight), cr.straight)
 	}
 	if len(cr.straight[int(HIACE-HIACE)]) != 5 {
-		t.Error("straight entry must have 5 index, but %+v", cr.straight)
+		t.Errorf("straight entry must have 5 index, but %+v", cr.straight)
 	}
 	if len(cr.straight[int(HIACE-KING)]) != 5 {
-		t.Error("straight entry must have 5 index, but %+v", cr.straight)
+		t.Errorf("straight entry must have 5 index, but %+v", cr.straight)
 	}
 	if len(cr.straight[int(HIACE-QUEEN)]) != 5 {
-		t.Error("straight entry must have 5 index, but %+v", cr.straight)
+		t.Errorf("straight entry must have 5 index, but %+v", cr.straight)
 	}
 }
 
