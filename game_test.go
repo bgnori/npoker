@@ -4,6 +4,7 @@ package npoker
 import (
 	//"fmt"
 	"testing"
+	"bytes"
 )
 
 func TestPSReader(t *testing.T) {
@@ -50,8 +51,9 @@ Seat 2: Dette32 mucked [5s Kc]
 Seat 3: Drug08 (button) mucked [4d 6h]
 Seat 4: FluffyStutt (small blind) folded before Flop
 `
+	input := bytes.NewBufferString(sample)
 	reader := NewPSReader()
-	reader.feed(sample)
+	reader.feed(input)
 	reader.debug()
 }
 
