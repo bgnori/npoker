@@ -8,6 +8,8 @@ import (
 )
 
 type Line interface {
+	//set up
+	startofHand()
 	seatPlayer()
 	setBtn()
 	postSB()
@@ -28,8 +30,127 @@ type Line interface {
 	endofHand()
 }
 
+
+type LineEventType int
+
+const (
+	NULLEVENT LineEventType = iota
+	STARTOFHAND
+	SEATPLAYER
+	SETBTN
+	POSTSB
+	POSTBB
+	DEALX
+	DEALALL
+	FOLD
+	BET
+	RAISE
+	CHECK
+	CALL
+	PREFLOP
+	FLOP
+	TURN
+	RIVER
+	SHOWDOWN
+	ENDOFHAND
+	LINEEVENTTYPES
+)
+
+func (t LineEventType) String() string {
+	return [...]string{
+		"NULLEVENT",
+		"STARTOFHAND",
+		"SEATPLAYER",
+		"SETBTN",
+		"POSTSB",
+		"POSTBB",
+		"DEALX",
+		"DEALALL",
+		"FOLD",
+		"BET",
+		"RAISE",
+		"CHECK",
+		"CALL",
+		"PREFLOP",
+		"FLOP",
+		"TURN",
+		"RIVER",
+		"SHOWDOWN",
+		"ENDOFHAND",
+		"LINEEVENTTYPES",
+	}[t]
+}
+
+type Mock struct {
+	foo LineEventType
+}
+func NewMock() *Mock {
+	return &Mock{}
+}
+
+func (m *Mock) startofHand(){
+	m.foo = STARTOFHAND
+}
+
+func (m *Mock) seatPlayer() {
+	m.foo = SEATPLAYER
+}
+
+func (m *Mock) setBtn() {
+	m.foo = SETBTN
+}
+func (m *Mock) postSB() {
+	m.foo = POSTSB
+}
+func (m *Mock) postBB() {
+	m.foo = POSTBB
+}
+func (m *Mock) dealX(){
+	m.foo = DEALX
+}
+func (m *Mock) dealAll(){
+	m.foo = DEALX
+}
+//actions
+func (m *Mock) fold(){
+	m.foo = FOLD
+}
+func (m *Mock) bet(){
+	m.foo = BET
+}
+func (m *Mock) raise(){
+	m.foo = RAISE
+}
+func (m *Mock) check(){
+	m.foo = CHECK
+}
+func (m *Mock) call(){
+	m.foo = CALL
+}
+
+//phase
+func (m *Mock) preflop(){
+	m.foo = PREFLOP
+}
+func (m *Mock) flop(){
+	m.foo = FLOP
+}
+func (m *Mock) turn(){
+	m.foo = TURN
+}
+func (m *Mock) river(){
+	m.foo = RIVER
+}
+func (m *Mock) showdown(){
+	m.foo = SHOWDOWN
+}
+func (m *Mock) endofHand(){
+	m.foo = ENDOFHAND
+}
+
+
 type PSReader struct {
-	pass int
+	line Line
 }
 
 func NewPSReader() *PSReader {
@@ -47,8 +168,9 @@ func (reader *PSReader)feed(input io.Reader){
 }
 
 func (reader *PSReader)feedLine(line string){
-	fmt.Println(line)
+	reader.line.startofHand()
 }
+
 
 func (reader *PSReader)debug(){
 }

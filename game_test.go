@@ -7,7 +7,7 @@ import (
 	"bytes"
 )
 
-func TestPSReader(t *testing.T) {
+func TestPSReaderFull(t *testing.T) {
 	/*
 		from https://gist.github.com/evgeniyp/e2e6842e7c84881d7611869482c0c930
 	*/
@@ -58,5 +58,16 @@ Seat 4: FluffyStutt (small blind) folded before Flop
 }
 
 
+func TestPSReaderfeedLine(t *testing.T) {
+	sample := `PokerStars Hand #174088855475:  Hold'em No Limit (50/100) - 2017/08/08 23:16:30 MSK [2017/08/08 16:16:30 ET]
+`
+	reader := NewPSReader()
+	mock := NewMock()
+	reader.line = mock
+	reader.feedLine(sample)
+	if mock.foo != STARTOFHAND {
+		t.Errorf("%v is expected but got %v",  STARTOFHAND, mock.foo)
+	}
 
+}
 
