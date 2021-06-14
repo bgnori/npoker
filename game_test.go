@@ -60,7 +60,7 @@ Seat 4: FluffyStutt (small blind) folded before Flop
 }
 
 
-func TestPSReaderfeedLine(t *testing.T) {
+func TestPSReaderfeedLine_STARTOFHAND(t *testing.T) {
 	sample := `PokerStars Hand #174088855475:  Hold'em No Limit (50/100) - 2017/08/08 23:16:30 MSK [2017/08/08 16:16:30 ET]
 `
 	reader := NewPSReader()
@@ -70,6 +70,19 @@ func TestPSReaderfeedLine(t *testing.T) {
 	if mock.foo != STARTOFHAND {
 		t.Errorf("%v is expected but got %v",  STARTOFHAND, mock.foo)
 	}
-
 }
+
+
+
+func TestPSReaderfeedLine_SEATPLAYER(t *testing.T) {
+	sample := `Seat 1: adevlupec (53368 in chips)`
+	reader := NewPSReader()
+	mock := NewMock()
+	reader.line = mock
+	reader.feedLine(sample)
+	if mock.foo != SEATPLAYER {
+		t.Errorf("%v is expected but got %v",  SEATPLAYER, mock.foo)
+	}
+}
+
 
