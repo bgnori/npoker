@@ -53,6 +53,8 @@ Seat 4: FluffyStutt (small blind) folded before Flop
 `
 	input := bytes.NewBufferString(sample)
 	reader := NewPSReader()
+	mock := NewMock()
+	reader.line = mock
 	reader.feed(input)
 	reader.debug()
 }

@@ -31,10 +31,10 @@ type Line interface {
 }
 
 
-type LineEventType int
+type LineEventID int
 
 const (
-	NULLEVENT LineEventType = iota
+	NULLEVENT LineEventID = iota
 	STARTOFHAND
 	SEATPLAYER
 	SETBTN
@@ -56,33 +56,8 @@ const (
 	LINEEVENTTYPES
 )
 
-func (t LineEventType) String() string {
-	return [...]string{
-		"NULLEVENT",
-		"STARTOFHAND",
-		"SEATPLAYER",
-		"SETBTN",
-		"POSTSB",
-		"POSTBB",
-		"DEALX",
-		"DEALALL",
-		"FOLD",
-		"BET",
-		"RAISE",
-		"CHECK",
-		"CALL",
-		"PREFLOP",
-		"FLOP",
-		"TURN",
-		"RIVER",
-		"SHOWDOWN",
-		"ENDOFHAND",
-		"LINEEVENTTYPES",
-	}[t]
-}
-
 type Mock struct {
-	foo LineEventType
+	foo LineEventID
 }
 func NewMock() *Mock {
 	return &Mock{}
@@ -99,31 +74,39 @@ func (m *Mock) seatPlayer() {
 func (m *Mock) setBtn() {
 	m.foo = SETBTN
 }
+
 func (m *Mock) postSB() {
 	m.foo = POSTSB
 }
+
 func (m *Mock) postBB() {
 	m.foo = POSTBB
 }
+
 func (m *Mock) dealX(){
 	m.foo = DEALX
 }
 func (m *Mock) dealAll(){
 	m.foo = DEALX
 }
+
 //actions
 func (m *Mock) fold(){
 	m.foo = FOLD
 }
+
 func (m *Mock) bet(){
 	m.foo = BET
 }
+
 func (m *Mock) raise(){
 	m.foo = RAISE
 }
+
 func (m *Mock) check(){
 	m.foo = CHECK
 }
+
 func (m *Mock) call(){
 	m.foo = CALL
 }
@@ -132,18 +115,23 @@ func (m *Mock) call(){
 func (m *Mock) preflop(){
 	m.foo = PREFLOP
 }
+
 func (m *Mock) flop(){
 	m.foo = FLOP
 }
+
 func (m *Mock) turn(){
 	m.foo = TURN
 }
+
 func (m *Mock) river(){
 	m.foo = RIVER
 }
+
 func (m *Mock) showdown(){
 	m.foo = SHOWDOWN
 }
+
 func (m *Mock) endofHand(){
 	m.foo = ENDOFHAND
 }
