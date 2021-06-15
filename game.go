@@ -5,23 +5,26 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"reflect"
+	"regexp"
+	"strings"
 )
 
 type Line interface {
-	//set up
+	/* set up */
 	startofHand()
 	seatPlayer()
 	setBtn()
 	postSB()
 	postBB()
 	dealAll()
-	//actions
+	/* actions */
 	fold()
 	bet()
 	raise()
 	check()
 	call()
-	//phase
+	/* phase */
 	preflop()
 	flop()
 	turn()
@@ -57,8 +60,10 @@ const (
 )
 
 type Mock struct {
+	// implements Line
 	foo LineEventID
 }
+
 func NewMock() *Mock {
 	return &Mock{}
 }
@@ -139,10 +144,9 @@ func (m *Mock) endofHand(){
 
 type PSReader struct {
 	line Line
-}
-
-func NewPSReader() *PSReader {
-	return &PSReader{}
+	re *regexp.Regexp
+	regExpStrings []string
+	names map[string][]string
 }
 
 func (reader *PSReader)feed(input io.Reader){
@@ -155,8 +159,80 @@ func (reader *PSReader)feed(input io.Reader){
 	}
 }
 
+func (reader *PSReader)add(pattern string)*PSReader {
+	r := regexp.MustCompile(pattern)
+	names := r.SubexpNames()
+	reader.names[names[1]] = names[2:]
+	reader.regExpStrings = append(reader.regExpStrings, pattern)
+	return reader
+}
+
+func (reader *PSReader)endOfAdd(){
+	reader.re = regexp.MustCompile(strings.Join(reader.regExpStrings, `|`))
+}
+
+
+func NewPSReader() *PSReader {
+	g := &PSReader{}
+	g.names = make(map[string][]string)
+	g.regExpStrings = []string{}
+	g.add(`(?P<startofHand>^PokerStars Hand #(?P<handNumber>\d+))`)
+	g.add(`(?P<seatPlayer>^Seat (?P<SeatNumber>\d): \w+)`)
+	g.add(`(?P<postSB>^%w+: posts small blind %d+)`)
+	g.add(`(?P<postBB>^%w+: posts big blind %d+)`)
+/*
+(?P<dealAll>)
+(?P<fold>)
+(?P<bet>)
+(?P<raise>)
+(?P<check>)
+(?P<call>)
+(?P<preflop>)
+(?P<flop>)
+(?P<turn)
+(?P<river)
+(?P<showdown>)
+(?P<endofHand>)```
+*/
+	g.endOfAdd()
+	fmt.Println(g.names)
+	return g
+}
+
+
+func (reader *PSReader)Find(line string) map[string][]int{
+	d := make(map[string][]int)
+	matches := reader.re.FindStringSubmatchIndex(line)
+	if len(matches) > 0{
+		for i, name := range reader.re.SubexpNames() {
+			d[name] = matches[2*i:2*i+2]
+		}
+	}
+	return d
+}
+
+
 func (reader *PSReader)feedLine(line string){
-	reader.line.startofHand()
+	d := reader.Find(line)
+	if len(d) < 1 {
+		return
+	}
+	for key, value := range d {
+		if key != "" && value[0] > -1  && value[1] > -1 {
+			if  v, ok := reader.names[key]; ok {
+				fmt.Println(key, "==>" ,value, v)
+				fmt.Println(reflect.ValueOf(&reader.line))
+				fmt.Println(reflect.ValueOf(&reader.line).NumMethod())
+				fmt.Println(reflect.ValueOf(&reader.line).MethodByName(`startofHand`))
+				method := reflect.ValueOf(reader.line).MethodByName(key)
+				fmt.Println(method)
+				if method.IsValid() {
+					method.Call([]reflect.Value{})
+				}
+
+			}
+		}
+	}
 }
 
 
