@@ -2,9 +2,10 @@
 package npoker
 
 import (
-	//"fmt"
 	"testing"
 	"bytes"
+	//"reflect"
+	//"fmt"
 )
 
 func TestPSReaderFull(t *testing.T) {
@@ -145,7 +146,7 @@ func TestPSReaderfeedLine_FOLD(t *testing.T) {
 
 func TestPSReaderfeedLine_BET(t *testing.T) {
 	//UGH! no testing data
-	sample := `FluffyStutt: folds`
+	sample := `FluffyStutt: bets 100`
 	reader := NewPSReader()
 	mock := NewMock()
 	reader.line = mock
@@ -158,7 +159,7 @@ func TestPSReaderfeedLine_BET(t *testing.T) {
 
 func TestPSReaderfeedLine_RAISE(t *testing.T) {
 	//UGH! no testing data
-	sample := `FluffyStutt: folds`
+	sample := `FluffyStutt: raises 200`
 	reader := NewPSReader()
 	mock := NewMock()
 	reader.line = mock

@@ -12,25 +12,25 @@ import (
 
 type Line interface {
 	/* set up */
-	startofHand()
-	seatPlayer()
-	setBtn()
-	postSB()
-	postBB()
-	dealAll()
+	StartOfHand()
+	SeatPlayer()
+	SetBtn()
+	PostSB()
+	PostBB()
+	DealAll()
 	/* actions */
-	fold()
-	bet()
-	raise()
-	check()
-	call()
+	Fold()
+	Bet()
+	Raise()
+	Check()
+	Call()
 	/* phase */
-	preflop()
-	flop()
-	turn()
-	river()
-	showdown()
-	endofHand()
+	Preflop()
+	Flop()
+	Turn()
+	River()
+	Showdown()
+	EndOfHand()
 }
 
 
@@ -65,79 +65,81 @@ type Mock struct {
 }
 
 func NewMock() *Mock {
-	return &Mock{}
+	a := &Mock{}
+	return a
 }
 
-func (m *Mock) startofHand(){
+func (m *Mock) StartOfHand(){
 	m.foo = STARTOFHAND
 }
 
-func (m *Mock) seatPlayer() {
+func (m *Mock) SeatPlayer() {
 	m.foo = SEATPLAYER
 }
 
-func (m *Mock) setBtn() {
+func (m *Mock) SetBtn() {
 	m.foo = SETBTN
 }
 
-func (m *Mock) postSB() {
+func (m *Mock) PostSB() {
 	m.foo = POSTSB
 }
 
-func (m *Mock) postBB() {
+func (m *Mock) PostBB() {
 	m.foo = POSTBB
 }
 
-func (m *Mock) dealX(){
+func (m *Mock) DealX(){
 	m.foo = DEALX
 }
-func (m *Mock) dealAll(){
+
+func (m *Mock) DealAll(){
 	m.foo = DEALX
 }
 
 //actions
-func (m *Mock) fold(){
+func (m *Mock) Fold(){
 	m.foo = FOLD
 }
 
-func (m *Mock) bet(){
+func (m *Mock) Bet(){
 	m.foo = BET
 }
 
-func (m *Mock) raise(){
+func (m *Mock) Raise(){
 	m.foo = RAISE
 }
 
-func (m *Mock) check(){
+func (m *Mock) Check(){
 	m.foo = CHECK
 }
 
-func (m *Mock) call(){
+func (m *Mock) Call(){
 	m.foo = CALL
 }
 
 //phase
-func (m *Mock) preflop(){
+func (m *Mock) Preflop(){
 	m.foo = PREFLOP
 }
 
-func (m *Mock) flop(){
+func (m *Mock) Flop(){
 	m.foo = FLOP
 }
 
-func (m *Mock) turn(){
+func (m *Mock) Turn(){
 	m.foo = TURN
 }
 
-func (m *Mock) river(){
+func (m *Mock) River(){
 	m.foo = RIVER
 }
 
-func (m *Mock) showdown(){
+func (m *Mock) Showdown(){
 	m.foo = SHOWDOWN
 }
 
-func (m *Mock) endofHand(){
+func (m *Mock) EndOfHand(){
 	m.foo = ENDOFHAND
 }
 
@@ -176,26 +178,23 @@ func NewPSReader() *PSReader {
 	g := &PSReader{}
 	g.names = make(map[string][]string)
 	g.regExpStrings = []string{}
-	g.add(`(?P<startofHand>^PokerStars Hand #(?P<handNumber>\d+))`)
-	g.add(`(?P<seatPlayer>^Seat (?P<SeatNumber>\d): \w+)`)
-	g.add(`(?P<postSB>^%w+: posts small blind %d+)`)
-	g.add(`(?P<postBB>^%w+: posts big blind %d+)`)
-/*
-(?P<dealAll>)
-(?P<fold>)
-(?P<bet>)
-(?P<raise>)
-(?P<check>)
-(?P<call>)
-(?P<preflop>)
-(?P<flop>)
-(?P<turn)
-(?P<river)
-(?P<showdown>)
-(?P<endofHand>)```
-*/
+	g.add(`(?P<StartOfHand>^PokerStars Hand #(?P<handNumber>\d+))`)
+	g.add(`(?P<SeatPlayer>^Seat (?P<SeatNumber>\d): (?P<PlayerName>\w+))`)
+	g.add(`(?P<PostSB>^\w+: posts small blind \d+)`)
+	g.add(`(?P<PostBB>^\w+: posts big blind \d+)`)
+	g.add(`(?P<DealX>^Dealt to (?P<PlayerName>\w+) \[\w\w \w\w\])`)
+	g.add(`(?P<Fold>^\w+: folds)`)
+	g.add(`(?P<Bet>^\w+: bets \d+)`)
+	g.add(`(?P<Raise>^\w+: raises \d+)`)
+	g.add(`(?P<Check>^\w+: checks)`)
+	g.add(`(?P<Call>^\w+: calls \d+)`)
+	g.add(`(?P<Preflop>^\*\*\* HOLE CARDS \*\*\*)`)
+	g.add(`(?P<Flop>^\*\*\* FLOP \*\*\*)`)
+	g.add(`(?P<Turn>^\*\*\* TURN \*\*\*)`)
+	g.add(`(?P<River>^\*\*\* RIVER \*\*\*)`)
+	g.add(`(?P<Showdown>^\*\*\* SHOW DOWN \*\*\*)`)
+	g.add(`(?P<EndOfHand>^\*\*\* SUMMARY \*\*\*)`)
 	g.endOfAdd()
-	fmt.Println(g.names)
 	return g
 }
 
@@ -221,11 +220,7 @@ func (reader *PSReader)feedLine(line string){
 		if key != "" && value[0] > -1  && value[1] > -1 {
 			if  v, ok := reader.names[key]; ok {
 				fmt.Println(key, "==>" ,value, v)
-				fmt.Println(reflect.ValueOf(&reader.line))
-				fmt.Println(reflect.ValueOf(&reader.line).NumMethod())
-				fmt.Println(reflect.ValueOf(&reader.line).MethodByName(`startofHand`))
 				method := reflect.ValueOf(reader.line).MethodByName(key)
-				fmt.Println(method)
 				if method.IsValid() {
 					method.Call([]reflect.Value{})
 				}
