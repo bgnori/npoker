@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+//	"text/template"
+	//"bytes"
 )
 
 type Line interface {
@@ -144,6 +146,47 @@ func (m *Mock) EndOfHand(){
 }
 
 
+type RecursiveHandler struct {
+	Children []*RecursiveHandler
+	Name string
+	Partial string
+}
+
+func NewRecursiveHandler(name string, partial string, children ...*RecursiveHandler) *RecursiveHandler{
+	rh := &RecursiveHandler{}
+	rh.Name = name
+	rh.Partial = partial
+	rh.Children = children
+	return rh
+}
+
+/* template version. something wrong with recursion
+func (rh *RecursiveHandler)makeRegExp() string{
+	b := bytes.NewBufferString("")
+	retempl := `(?P<{{.Name}}>{{.Partial}}{{range .Children}}{{.makeRegExp }}{{end}})`
+	t := template.Must(template.New("rh").Parse(retempl))
+	t.Execute(b, rh)
+	return b.String()
+}
+*/
+
+func (rh *RecursiveHandler)makeRegExp() string{
+	t := make([]string, 0)
+	for _, c := range rh.Children {
+		t = append(t, c.makeRegExp())
+	}
+
+	return fmt.Sprintf(`(?P<%s>%s%s)`, rh.Name, rh.Partial, strings.Join(t, ""))
+}
+
+/*
+	makeMapper()
+	Handle() 
+}
+*/
+
+type StartOfHand RecursiveHandler
+
 type PSReader struct {
 	line Line
 	re *regexp.Regexp
@@ -177,6 +220,15 @@ func (reader *PSReader)endOfAdd(){
 func NewPSReader() *PSReader {
 	amount := `(?P<Amount>(?P<TournamentChip>\d+)|(?P<RingChip>(?P<currency>\$)|(?P<float>\d+\.\d+)))`
 	allin := `(?P<AndAllin> and is all-in)?`
+
+	a := NewRecursiveHandler("a child",  "a child")//, NewRecursiveHandler("b child",  "b child"))
+	a.makeRegExp()
+
+	rh := NewRecursiveHandler("Test", "test", a)
+
+	fmt.Println("a:", a.makeRegExp())
+	fmt.Println("rh:", rh.makeRegExp())
+
 	g := &PSReader{}
 	g.names = make(map[string][]string)
 	g.regExpStrings = []string{}
