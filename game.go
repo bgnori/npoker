@@ -175,6 +175,8 @@ func (reader *PSReader)endOfAdd(){
 
 
 func NewPSReader() *PSReader {
+	amount := `(?P<Amount>(?P<TournamentChip>\d+)|(?P<RingChip>(?P<currency>\$)|(?P<float>\d+\.\d+)))`
+	allin := `(?P<AndAllin> and is all-in)?`
 	g := &PSReader{}
 	g.names = make(map[string][]string)
 	g.regExpStrings = []string{}
@@ -184,7 +186,7 @@ func NewPSReader() *PSReader {
 	g.add(`(?P<PostBB>^\w+: posts big blind \d+)`)
 	g.add(`(?P<DealX>^Dealt to (?P<PlayerName>\w+) \[\w\w \w\w\])`)
 	g.add(`(?P<Fold>^\w+: folds)`)
-	g.add(`(?P<Bet>^\w+: bets \d+)`)
+	g.add(`(?P<Bet>^\w+: bets ` + amount + allin + `)`)
 	g.add(`(?P<Raise>^\w+: raises \d+)`)
 	g.add(`(?P<Check>^\w+: checks)`)
 	g.add(`(?P<Call>^\w+: calls \d+)`)
