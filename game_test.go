@@ -363,7 +363,7 @@ func TestPSReaderfeedLine_SEATPLAYER(t *testing.T) {
 }
 
 func TestPSReaderfeedLine_SETBTN(t *testing.T) {
-	sample := `Seat 1: adevlupec (53368 in chips)`
+	sample := `Table 'Eltigen' 9-max Seat #8 is the button`
 	reader := NewPSReader()
 	mock := NewMock()
 	reader.line = mock

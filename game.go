@@ -146,12 +146,15 @@ type RecursiveHandler struct {
 	Name     string
 	Partial  string
 	Children []*RecursiveHandler
+	Bare bool
 }
 
-func NewRecursiveHandler(name string, partial string, children ...*RecursiveHandler) *RecursiveHandler {
+
+func NewRecursiveHandler(name string, partial string, bare bool, children ...*RecursiveHandler) *RecursiveHandler {
 	rh := &RecursiveHandler{}
 	rh.Name = name
 	rh.Partial = partial
+	rh.Bare = bare
 	rh.Children = children
 	return rh
 }
@@ -162,7 +165,14 @@ func (rh *RecursiveHandler) makeRegExp() string {
 		t = append(t, c.makeRegExp())
 	}
 
-	return fmt.Sprintf(`(?P<%s>%s%s)`, rh.Name, rh.Partial, strings.Join(t, ""))
+	if rh.Bare {
+		return rh.Partial
+	}
+	if rh.Name != "" {
+		return fmt.Sprintf(`(?P<%s>%s%s)`, rh.Name, rh.Partial, strings.Join(t, ""))
+	}else {
+		return fmt.Sprintf(`(%s%s)`, rh.Partial, strings.Join(t, ""))
+	}
 }
 
 type PSReader struct {
@@ -185,6 +195,7 @@ func (reader *PSReader) add_handler(rh *RecursiveHandler) {
 	reader.handlers[rh.Name] = rh
 }
 
+
 func (reader *PSReader) endOfAdd() {
 	t := make([]string, 0)
 	for _, v := range reader.handlers {
@@ -194,33 +205,67 @@ func (reader *PSReader) endOfAdd() {
 }
 
 func NewPSReader() *PSReader {
-	//amount := `(?P<Amount>(?P<TournamentChip>\d+)|(?P<RingChip>(?P<currency>\$)|(?P<float>\d+\.\d+)))`
-	//allin := `(?P<AndAllin> and is all-in)?`
+	playername := NewRecursiveHandler("PlayerName", `\w+`, false)
+	amount := NewRecursiveHandler("Amount", ``, false,
+			NewRecursiveHandler("TournamentChip", `\d+`, false),
+			NewRecursiveHandler("", `|`, true),
+			NewRecursiveHandler("RingChip", ``, false,
+				NewRecursiveHandler("Currency", `\$`, false),
+				NewRecursiveHandler("Float", `\d+\.\d+`, false)))
+	allin := NewRecursiveHandler("Allin", `( and is all-in)?`, true)
+
 
 	g := &PSReader{}
 	g.handlers = make(map[string]*RecursiveHandler)
-	g.add_handler(NewRecursiveHandler("StartOfHand", "^PokerStars Hand #",
-		NewRecursiveHandler("HandNumber", `\d+`)))
-	/*
-		g.add(`(?P<StartOfHand>^PokerStars Hand #(?P<handNumber>\d+))`)
-		g.add(`(?P<SeatPlayer>^Seat (?P<SeatNumber>\d): (?P<PlayerName>\w+))`)
-		g.add(`(?P<PostSB>^\w+: posts small blind \d+)`)
-		g.add(`(?P<PostBB>^\w+: posts big blind \d+)`)
-		g.add(`(?P<DealX>^Dealt to (?P<PlayerName>\w+) \[\w\w \w\w\])`)
-		g.add(`(?P<Fold>^\w+: folds)`)
-		g.add(`(?P<Bet>^\w+: bets ` + amount + allin + `)`)
-		g.add(`(?P<Raise>^\w+: raises \d+)`)
-		g.add(`(?P<Check>^\w+: checks)`)
-		g.add(`(?P<Call>^\w+: calls \d+)`)
-		g.add(`(?P<Preflop>^\*\*\* HOLE CARDS \*\*\*)`)
-		g.add(`(?P<Flop>^\*\*\* FLOP \*\*\*)`)
-		g.add(`(?P<Turn>^\*\*\* TURN \*\*\*)`)
-		g.add(`(?P<River>^\*\*\* RIVER \*\*\*)`)
-		g.add(`(?P<Showdown>^\*\*\* SHOW DOWN \*\*\*)`)
-		g.add(`(?P<EndOfHand>^\*\*\* SUMMARY \*\*\*)`)
-	*/
+	g.add_handler(NewRecursiveHandler("StartOfHand", "^PokerStars Hand #", false,
+		NewRecursiveHandler("HandNumber", `\d+`, false)))
+	g.add_handler(NewRecursiveHandler("SetBtn", "^Table ", false))
+	g.add_handler(NewRecursiveHandler("SeatPlayer", "^Seat ", false,
+		NewRecursiveHandler("SeatNumber", `\d+`, false),
+		NewRecursiveHandler("", `: `, true),
+		playername))
+	g.add_handler(NewRecursiveHandler("PostSB", "^", false,
+			playername,
+			NewRecursiveHandler("", `: posts small blind `, false),
+			amount))
+	g.add_handler(NewRecursiveHandler("PostBB", "^", false,
+			playername,
+			NewRecursiveHandler("", `: posts big blind `, false),
+			amount))
+	g.add_handler(NewRecursiveHandler("DealX", "^Dealt to ", false,
+			playername,
+			NewRecursiveHandler("", ` `, true),
+			NewRecursiveHandler("HoleCard", `\[\w\w \w\w\]`, false)))
+	g.add_handler(NewRecursiveHandler("Fold", "^", false,
+			playername,
+			NewRecursiveHandler("", `: folds`, false)))
+	g.add_handler(NewRecursiveHandler("Bet", "^", false,
+			playername,
+			NewRecursiveHandler("", `: bets `, false),
+			amount,
+			allin))
+	g.add_handler(NewRecursiveHandler("Raise", "^", false,
+			playername,
+			NewRecursiveHandler("", `: raises `, false),
+			amount,
+			allin))
+	g.add_handler(NewRecursiveHandler("Check", "^", false,
+			playername,
+			NewRecursiveHandler("", `: checks`, false)))
+	g.add_handler(NewRecursiveHandler("Call", "^", false,
+			playername,
+			NewRecursiveHandler("", `: calls `, false),
+			amount,
+			allin))
+	g.add_handler(NewRecursiveHandler("Preflop", `^\*\*\* HOLE CARDS \*\*\*`, false))
+	g.add_handler(NewRecursiveHandler("Flop", `^\*\*\* FLOP \*\*\*`, false))
+	g.add_handler(NewRecursiveHandler("Turn", `^\*\*\* TURN \*\*\*`, false))
+	g.add_handler(NewRecursiveHandler("River", `^\*\*\* RIVER \*\*\*`, false))
+	g.add_handler(NewRecursiveHandler("Showdown", `^\*\*\* SHOW DOWN \*\*\*`, false))
+	g.add_handler(NewRecursiveHandler("EndOfHand", `^\*\*\* SUMMARY \*\*\*`, false))
+
 	g.endOfAdd()
-	fmt.Println(g.re)
+	//fmt.Println(g.re)
 	return g
 }
 
@@ -237,7 +282,7 @@ func (reader *PSReader) Find(line string) map[string][]int {
 
 func (reader *PSReader) feedLine(line string) {
 	found := reader.Find(line)
-	fmt.Println(found)
+	//fmt.Println(found)
 	if len(found) < 1 {
 		return
 	}
