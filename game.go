@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
-//	"text/template"
-	//"bytes"
 )
 
 type Line interface {
@@ -147,9 +145,9 @@ func (m *Mock) EndOfHand(){
 
 
 type RecursiveHandler struct {
-	Children []*RecursiveHandler
 	Name string
 	Partial string
+	Children []*RecursiveHandler
 }
 
 func NewRecursiveHandler(name string, partial string, children ...*RecursiveHandler) *RecursiveHandler{
@@ -160,15 +158,6 @@ func NewRecursiveHandler(name string, partial string, children ...*RecursiveHand
 	return rh
 }
 
-/* template version. something wrong with recursion
-func (rh *RecursiveHandler)makeRegExp() string{
-	b := bytes.NewBufferString("")
-	retempl := `(?P<{{.Name}}>{{.Partial}}{{range .Children}}{{.makeRegExp }}{{end}})`
-	t := template.Must(template.New("rh").Parse(retempl))
-	t.Execute(b, rh)
-	return b.String()
-}
-*/
 
 func (rh *RecursiveHandler)makeRegExp() string{
 	t := make([]string, 0)
@@ -179,20 +168,13 @@ func (rh *RecursiveHandler)makeRegExp() string{
 	return fmt.Sprintf(`(?P<%s>%s%s)`, rh.Name, rh.Partial, strings.Join(t, ""))
 }
 
-/*
-	makeMapper()
-	Handle() 
-}
-*/
-
-type StartOfHand RecursiveHandler
 
 type PSReader struct {
 	line Line
 	re *regexp.Regexp
-	regExpStrings []string
-	names map[string][]string
+	handlers map[string]*RecursiveHandler
 }
+
 
 func (reader *PSReader)feed(input io.Reader){
 	scanner := bufio.NewScanner(input)
@@ -204,34 +186,30 @@ func (reader *PSReader)feed(input io.Reader){
 	}
 }
 
-func (reader *PSReader)add(pattern string)*PSReader {
-	r := regexp.MustCompile(pattern)
-	names := r.SubexpNames()
-	reader.names[names[1]] = names[2:]
-	reader.regExpStrings = append(reader.regExpStrings, pattern)
-	return reader
+func (reader *PSReader)add_handler(rh *RecursiveHandler) {
+	reader.handlers[rh.Name] = rh
 }
 
+
 func (reader *PSReader)endOfAdd(){
-	reader.re = regexp.MustCompile(strings.Join(reader.regExpStrings, `|`))
+	t := make([]string, 0)
+	for _, v := range reader.handlers{
+		t = append(t, v.makeRegExp())
+	}
+	reader.re = regexp.MustCompile(strings.Join(t, `|`))
 }
 
 
 func NewPSReader() *PSReader {
-	amount := `(?P<Amount>(?P<TournamentChip>\d+)|(?P<RingChip>(?P<currency>\$)|(?P<float>\d+\.\d+)))`
-	allin := `(?P<AndAllin> and is all-in)?`
+	//amount := `(?P<Amount>(?P<TournamentChip>\d+)|(?P<RingChip>(?P<currency>\$)|(?P<float>\d+\.\d+)))`
+	//allin := `(?P<AndAllin> and is all-in)?`
 
-	a := NewRecursiveHandler("a child",  "a child")//, NewRecursiveHandler("b child",  "b child"))
-	a.makeRegExp()
-
-	rh := NewRecursiveHandler("Test", "test", a)
-
-	fmt.Println("a:", a.makeRegExp())
-	fmt.Println("rh:", rh.makeRegExp())
 
 	g := &PSReader{}
-	g.names = make(map[string][]string)
-	g.regExpStrings = []string{}
+	g.handlers = make(map[string]*RecursiveHandler)
+	g.add_handler(NewRecursiveHandler("StartOfHand", "^PokerStars Hand #",
+		NewRecursiveHandler("HandNumber", `\d+`)))
+/*
 	g.add(`(?P<StartOfHand>^PokerStars Hand #(?P<handNumber>\d+))`)
 	g.add(`(?P<SeatPlayer>^Seat (?P<SeatNumber>\d): (?P<PlayerName>\w+))`)
 	g.add(`(?P<PostSB>^\w+: posts small blind \d+)`)
@@ -248,7 +226,9 @@ func NewPSReader() *PSReader {
 	g.add(`(?P<River>^\*\*\* RIVER \*\*\*)`)
 	g.add(`(?P<Showdown>^\*\*\* SHOW DOWN \*\*\*)`)
 	g.add(`(?P<EndOfHand>^\*\*\* SUMMARY \*\*\*)`)
+*/
 	g.endOfAdd()
+	fmt.Println(g.re)
 	return g
 }
 
@@ -266,13 +246,14 @@ func (reader *PSReader)Find(line string) map[string][]int{
 
 
 func (reader *PSReader)feedLine(line string){
-	d := reader.Find(line)
-	if len(d) < 1 {
+	found := reader.Find(line)
+	fmt.Println(found)
+	if len(found) < 1 {
 		return
 	}
-	for key, value := range d {
+	for key, value := range found {
 		if key != "" && value[0] > -1  && value[1] > -1 {
-			if  v, ok := reader.names[key]; ok {
+			if  v, ok := reader.handlers[key]; ok {
 				fmt.Println(key, "==>" ,value, v)
 				method := reflect.ValueOf(reader.line).MethodByName(key)
 				if method.IsValid() {
